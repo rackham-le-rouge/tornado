@@ -1,0 +1,11 @@
+TODO
+----
+g=give up / x=done / ' '=TODO
+
+
+[ ]	Put the graphic up
+[ ]	Network functions
+     Receive a page
+     Keep the DNS in order to havn't to ask each time
+[ ] Make a parser able to find the file type
+[ ] Make a bin able to use this parser, and do more actions on parsed file !
