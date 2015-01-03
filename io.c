@@ -11,6 +11,12 @@
 
 #include "config.h"
 
+
+/** @brief
+  * checkIfAFileExist : check existance of a file by trying to opening it
+  * @param p_cFileName : file to test
+  * @return EXIT_SUCCESS if there is a success or EXIT_FAILURE in the other case
+  */
 int checkIfAFileExist(const char* p_cFileName)
 {
     FILE* l_fileFile = NULL;
@@ -33,6 +39,12 @@ int checkIfAFileExist(const char* p_cFileName)
 
 
 
+/** @brief
+  * Check if you can read & write the file provided as a parameter by trying
+  * to fopen it with w+ mode
+  * @param p_cFileName : name of the file to test
+  * @return EXIT_SUCCESS if success or EXIT_FAILURE in the other cases.
+  */
 int checkReadWriteFile(const char* p_cFileName)
 {
     FILE* l_fileFile = NULL;
@@ -54,6 +66,16 @@ int checkReadWriteFile(const char* p_cFileName)
 }
 
 
+
+/** @brief
+  * Open file FILE_ALREADY_DONE defined in the config.h and load its data
+  * in the memory at the address given by parameters. This function also
+  * do the memory allocation.
+  * @param p_cAlreadyDownloaded : pointer to the array of string to fill with
+  * the file datas
+  * @return Return the number of records read from the file (equivalent to the
+  * number of lines in the file
+  */
 unsigned int loadAlreadyTakenPageFile(char** p_cAlreadyDownloaded)
 {
     FILE* l_fileFile = NULL;
@@ -88,6 +110,13 @@ unsigned int loadAlreadyTakenPageFile(char** p_cAlreadyDownloaded)
     return l_iLine;
 }
 
+
+/** @brief
+  * checkConfigurationFiles is the main function to tests all needed files.
+  * that's here we proceed to all calls for checks existance or rights on the needed files.
+  * @param p_cAlreadyDownloaded : an array of strings designed to be filled by a called function...
+  * @return the number of entries (already visited pages) loaded by the load functions
+  */
 unsigned int checkConfigurationFiles(char** p_cAlreadyDownloaded)
 {
     if(checkIfAFileExist(FILE_ALREADY_DONE) == EXIT_FAILURE)

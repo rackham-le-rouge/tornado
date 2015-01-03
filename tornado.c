@@ -36,6 +36,8 @@ char rev[] = "0.1";
 int main(int argc, char** argv)
 {
     char** l_cAlreadyDownloaded = NULL;
+    int l_iNumberOfAlreadyDownloaded = 0;
+
     UNUSED(argc);
     UNUSED(argv);
 
@@ -43,7 +45,7 @@ int main(int argc, char** argv)
                 "         Tornado %s starting\n"
                 "-------------------------------------", rev)
 
-    LOG_INFO("number file : %u", checkConfigurationFiles(l_cAlreadyDownloaded));
+    l_iNumberOfAlreadyDownloaded =  checkConfigurationFiles(l_cAlreadyDownloaded);
 
     exit(EXIT_SUCCESS);
     return EXIT_SUCCESS;	
