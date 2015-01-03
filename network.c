@@ -33,15 +33,14 @@ size_t writeMemoryCallback(void* p_contents, size_t p_size, size_t nmemb, void* 
 }
 
 
-int retrieveAnUrl(const char* p_cUrlToGet)
+int retrieveAnUrl(const char* p_cUrlToGet, struct MemoryStruct* p_structMemory)
 {
         CURL* l_curlHandler = NULL;
         CURLcode l_curlResponseCode = 0;
-        struct MemoryStruct l_structMemory;
 
-
-        l_structMemory.memory = malloc(1);  /* will be grown as needed by the realloc above */ 
-        l_structMemory.size = 0;    /* no data at this point */ 
+        /* Initialisation with useless values */
+        p_structMemory->memory = malloc(1);
+        p_structMemory->size = 0; 
 
         curl_global_init(CURL_GLOBAL_ALL);
 
@@ -55,7 +54,7 @@ int retrieveAnUrl(const char* p_cUrlToGet)
         curl_easy_setopt(l_curlHandler, CURLOPT_WRITEFUNCTION, writeMemoryCallback);
 
         /* we pass our struct to the callback function */ 
-        curl_easy_setopt(l_curlHandler, CURLOPT_WRITEDATA, (void *)&l_structMemory);
+        curl_easy_setopt(l_curlHandler, CURLOPT_WRITEDATA, (void *)p_structMemory);
 
         /* some servers don't like requests that are made without a user-agent
            field, so we provide one */ 
@@ -64,23 +63,15 @@ int retrieveAnUrl(const char* p_cUrlToGet)
         /* get it! */ 
         l_curlResponseCode = curl_easy_perform(l_curlHandler);
 
-        /* check for errors */ 
+        /* check for errors, on the other cases, the page is stored in the memory */ 
         if(l_curlResponseCode != CURLE_OK)
         {
-                LOG_ERROR("curl_easy_perform() failed: %s", curl_easy_strerror(l_curlResponseCode));
+                LOG_ERROR("Function curl_easy_perform() failed: %s", curl_easy_strerror(l_curlResponseCode));
                 return EXIT_FAILURE;
-        }
-        else
-        {
-                /* Data is stored in memory, we can parse it ! */
         }
 
         /* cleanup curl stuff */ 
         curl_easy_cleanup(l_curlHandler);
-        if(l_structMemory.memory)
-        {
-                free(l_structMemory.memory);
-        }
         curl_global_cleanup();
 
         return EXIT_SUCCESS;
@@ -90,7 +81,17 @@ int retrieveAnUrl(const char* p_cUrlToGet)
 
 void networkLoop(int p_iNumberOfAlreadyDownloaded, char** p_cAlreadyDownloaded)
 {
+        struct MemoryStruct l_structMemory;
+
         UNUSED(p_iNumberOfAlreadyDownloaded);
         UNUSED(p_cAlreadyDownloaded);
-        retrieveAnUrl(URL_INDEX_OF_NEW);
+        if(retrieveAnUrl(URL_INDEX_OF_NEW, &l_structMemory) == EXIT_SUCCESS)
+        {
+                /* means that the page is stored in l_structMemory->memory */
+                LOG_WARNING("retrieved %d", l_structMemory.size);
+                if(l_structMemory.memory)
+                {
+                        free(l_structMemory.memory);
+                }
+        }
 }
