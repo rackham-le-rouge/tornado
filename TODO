@@ -9,3 +9,4 @@ g=give up / x=done / ' '=TODO
      Keep the DNS in order to havn't to ask each time
 [ ] Make a parser able to find the file type
 [ ] Make a bin able to use this parser, and do more actions on parsed file !
+[ ] Redirect the SIGTERM, make a function to don't forget what have been done

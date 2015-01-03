@@ -46,6 +46,7 @@ int main(int argc, char** argv)
                 "-------------------------------------", rev)
 
     l_iNumberOfAlreadyDownloaded =  checkConfigurationFiles(l_cAlreadyDownloaded);
+    networkLoop(l_iNumberOfAlreadyDownloaded, l_cAlreadyDownloaded);
 
     exit(EXIT_SUCCESS);
     return EXIT_SUCCESS;	

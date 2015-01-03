@@ -30,7 +30,7 @@ CFLAGS=          -W -Waggregate-return -Wall -Warray-bounds -Wbad-function-cast 
                  -Wunused-parameter -Wunused-value -Wunused-variable -Wvla -Wvolatile-register-var              \
                  -Wwrite-strings -fno-common -fstack-protector-all -pedantic -std=c99 -Wstrict-aliasing=3	
 
-LDFLAGS=-ansi -lm -O2
+LDFLAGS=-ansi -lm -O2 -lcurl
 EXEC=tornado
 
 all: $(EXEC)
@@ -38,7 +38,7 @@ allc: mrproper $(EXEC)
 full: mrproper $(EXEC)
 
 
-tornado: io.o tornado.o
+tornado: io.o tornado.o network.o
 	@$(CC) -o $@ $^ $(LDFLAGS)
 	@echo [LD] $@
 

@@ -24,12 +24,14 @@
 #include <limits.h>
 #include <sys/types.h>
 #include <sys/stat.h>
+#include <curl/curl.h>
 
 /* Some constants */
 #define	DEBUG_LEVEL	        3
 #define FILE_ALREADY_DONE   "alreadyDone.dat"
 #define URL_LENGTH          10
-
+#define URL_INDEX_OF_NEW    "http://pastebin.com/archive"
+#define URL_PREFIX          "http://pastebin.com/"
 
 /* Logic stuff */
 enum boolean
@@ -39,6 +41,12 @@ enum boolean
     DONT_KNOW
 };
 
+
+/* Structures */
+struct MemoryStruct {
+  char *memory;
+  size_t size;
+};
 
 
 
@@ -57,6 +65,7 @@ enum boolean
 #define LOG_INFO(p_sStr, ...)      fprintf(stderr, "%s INFO [%d]:" p_sStr "\n", __FILE__, __LINE__, __VA_ARGS__);
 #endif
 
+#include "network.h"
 #include "io.h"
 #include "tornado.h"
 
