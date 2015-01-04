@@ -11,7 +11,15 @@
 #include "config.h"
 
 
-
+/**
+ * @brief writeMemoryCallback is the called function, when the request is executed. It aim to reseize the allocated memory for
+ * for the buffer. Usinf a realloc.
+ * @param p_contents : retrieved data from the internet
+ * @param p_size : size of the retreieved data in (blocks ?)
+ * @param nmemb : size of one (block ?)
+ * @param p_data : the structure used to carry the data
+ * @return real size of the retrieved data (and thus of the extended memory location)
+ */
 size_t writeMemoryCallback(void* p_contents, size_t p_size, size_t nmemb, void* p_data)
 {
         size_t l_sizeRealsize = p_size * nmemb;
@@ -32,7 +40,12 @@ size_t writeMemoryCallback(void* p_contents, size_t p_size, size_t nmemb, void* 
         return l_sizeRealsize;
 }
 
-
+/**
+ * @brief Retreive html for the given url, and store it in the struture
+ * @param p_cUrlToGet : the url to download
+ * @param p_structMemory : the memory location of the struture to fill with the data
+ * @return EXIT_SUCCESS for a a success or EXIT_FAILURE in the other cases
+ */
 int retrieveAnUrl(const char* p_cUrlToGet, struct MemoryStruct* p_structMemory)
 {
         CURL* l_curlHandler = NULL;
@@ -82,13 +95,14 @@ int retrieveAnUrl(const char* p_cUrlToGet, struct MemoryStruct* p_structMemory)
 void networkLoop(int p_iNumberOfAlreadyDownloaded, char** p_cAlreadyDownloaded)
 {
         struct MemoryStruct l_structMemory;
+        
 
         UNUSED(p_iNumberOfAlreadyDownloaded);
         UNUSED(p_cAlreadyDownloaded);
         if(retrieveAnUrl(URL_INDEX_OF_NEW, &l_structMemory) == EXIT_SUCCESS)
         {
                 /* means that the page is stored in l_structMemory->memory */
-                LOG_WARNING("retrieved %d", l_structMemory.size);
+                LOG_INFO("retrieved %d", l_structMemory.size);
                 if(l_structMemory.memory)
                 {
                         free(l_structMemory.memory);
