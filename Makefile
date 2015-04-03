@@ -38,7 +38,7 @@ allc: mrproper $(EXEC)
 full: mrproper $(EXEC)
 
 
-tornado: io.o tornado.o network.o
+tornado: parser.o io.o tornado.o network.o
 	@$(CC) -o $@ $^ $(LDFLAGS)
 	@echo [LD] $@
 

@@ -27,11 +27,14 @@
 #include <curl/curl.h>
 
 /* Some constants */
-#define	DEBUG_LEVEL	        3
-#define FILE_ALREADY_DONE   "alreadyDone.dat"
-#define URL_LENGTH          10
-#define URL_INDEX_OF_NEW    "http://pastebin.com/archive"
-#define URL_PREFIX          "http://pastebin.com/"
+#define	DEBUG_LEVEL	                    3
+#define FILE_ALREADY_DONE               "alreadyDone.dat"
+#define URL_LENGTH                      10
+#define URL_INDEX_OF_NEW                "http://pastebin.com/archive"
+#define URL_PREFIX                      "http://pastebin.com/"
+#define TOKEN_DELIMITER_FOR_NEW_ENTRIES "\"border=\"0\" /><a href=\"/"
+#define NUMBER_OF_ENTRIES_PER_PAGE      50
+#define SEPARATION_CHARACTER            '#'
 
 /* Logic stuff */
 enum boolean
@@ -65,6 +68,7 @@ struct MemoryStruct {
 #define LOG_INFO(p_sStr, ...)      fprintf(stderr, "%s INFO [%d]:" p_sStr "\n", __FILE__, __LINE__, __VA_ARGS__);
 #endif
 
+#include "parser.h"
 #include "network.h"
 #include "io.h"
 #include "tornado.h"

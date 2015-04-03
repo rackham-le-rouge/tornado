@@ -91,21 +91,44 @@ int retrieveAnUrl(const char* p_cUrlToGet, struct MemoryStruct* p_structMemory)
 }
 
 
-
-void networkLoop(int p_iNumberOfAlreadyDownloaded, char** p_cAlreadyDownloaded)
+/**
+  * @brief Main network function, this is for the site pooling. Pool the index page
+  *        in order to get the needed URL (by calling a parser in order to extract URL from
+  *        the page) and then download pages one by one.
+  * @param p_iNumberOfAlreadyDownloaded : kind of index in the already downloaded buffer
+  * @paramp_cAlreadyDownloaded : really long string with a tab behavior. Belonging all URL already downloaded
+  */
+void networkLoop(int p_iNumberOfAlreadyDownloaded, char* p_cAlreadyDownloaded)
 {
         struct MemoryStruct l_structMemory;
-        
+        char* l_cNewUrlForThisSession = (char*)malloc(sizeof(char)); 
+        unsigned int l_iIndexOfNewEnd = 0;
+
+        /* init. there is a realloc just after in order to set the good size */
+        p_NewUrlForThisSession[0] = '\0';
 
         UNUSED(p_iNumberOfAlreadyDownloaded);
         UNUSED(p_cAlreadyDownloaded);
+        /* One loop is one INDEX page pool. We have a lot of URL, we have to exact these ; find the new one by
+           comparing with the older one ; and then download the newest ; store the new URL as a old one */ 
         if(retrieveAnUrl(URL_INDEX_OF_NEW, &l_structMemory) == EXIT_SUCCESS)
         {
                 /* means that the page is stored in l_structMemory->memory */
                 LOG_INFO("retrieved %d", l_structMemory.size);
+
+                parserForNewEntries(l_structMemory, l_cNewUrlForThisSession, &l_iIndexOfNewEnd);
+                downloadNewEntries(l_cNewUrlForThisSession,
+                                    l_iIndexOfNewEnd,
+                                    p_cAlreadyDownloaded,
+                                    p_iNumberOfAlreadyDownloaded);
+
                 if(l_structMemory.memory)
                 {
                         free(l_structMemory.memory);
                 }
+        }
+        else
+        {
+            LOG_ERROR("There is an error with the network, we cant load the page... Abort");
         }
 }
