@@ -105,7 +105,7 @@ void networkLoop(int p_iNumberOfAlreadyDownloaded, char* p_cAlreadyDownloaded)
         unsigned int l_iIndexOfNewEnd = 0;
 
         /* init. there is a realloc just after in order to set the good size */
-        p_NewUrlForThisSession[0] = '\0';
+        l_cNewUrlForThisSession[0] = '\0';
 
         UNUSED(p_iNumberOfAlreadyDownloaded);
         UNUSED(p_cAlreadyDownloaded);
@@ -117,10 +117,10 @@ void networkLoop(int p_iNumberOfAlreadyDownloaded, char* p_cAlreadyDownloaded)
                 LOG_INFO("retrieved %d", l_structMemory.size);
 
                 parserForNewEntries(l_structMemory, l_cNewUrlForThisSession, &l_iIndexOfNewEnd);
-                downloadNewEntries(l_cNewUrlForThisSession,
+                /*downloadNewEntries(l_cNewUrlForThisSession,
                                     l_iIndexOfNewEnd,
                                     p_cAlreadyDownloaded,
-                                    p_iNumberOfAlreadyDownloaded);
+                                    p_iNumberOfAlreadyDownloaded);*/
 
                 if(l_structMemory.memory)
                 {
@@ -129,6 +129,6 @@ void networkLoop(int p_iNumberOfAlreadyDownloaded, char* p_cAlreadyDownloaded)
         }
         else
         {
-            LOG_ERROR("There is an error with the network, we cant load the page... Abort");
+            LOG_ERROR("There is an error with the network, we cant load the page... Abort %s"," ");
         }
 }
