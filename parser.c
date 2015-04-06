@@ -28,7 +28,10 @@ int parserForNewEntries(struct MemoryStruct p_structMemory, char* p_cNewUrlForTh
     char l_cBufferForNewEntries[URL_LENGTH*NUMBER_OF_ENTRIES_PER_PAGE];
     int l_iIndex = 0;
     int l_iBufferForNewEntriesIndex = 0;
+    int l_iStartingPositionOfBuffer = 0;
+    int l_iIterator = 0;
 
+    /* we create a buffer for new entries holding data like that : END_OF_URL1#END_OF_URL2#\0 */
     do
     {
         /* find the next token */
@@ -44,14 +47,14 @@ int parserForNewEntries(struct MemoryStruct p_structMemory, char* p_cNewUrlForTh
             do
             {
                 l_cBufferForNewEntries[l_iBufferForNewEntriesIndex++] = l_cCurrentToken[l_iIndex];
-            }while(l_cCurrentToken[l_iIndex++] != '\"');
+            }while(l_cCurrentToken[l_iIndex++] != '\"');            /* cause the end of a new address is a " */
             l_iIndex = 0;
 
             /* close this entrie by adding a # */
             l_cBufferForNewEntries[l_iBufferForNewEntriesIndex++] = SEPARATION_CHARACTER;
             l_cBufferForNewEntries[l_iBufferForNewEntriesIndex + 1] = '\0';
         }
-    }while(noMoreEntries == FALSE);    
+    }while(noMoreEntries == FALSE);
 
     /* We have to resize p_cNewUrlForThisSession according to the length of the string l_cBufferForNewEntries */
     p_cNewUrlForThisSession = realloc(p_cNewUrlForThisSession, 
@@ -65,8 +68,20 @@ int parserForNewEntries(struct MemoryStruct p_structMemory, char* p_cNewUrlForTh
         return EXIT_FAILURE;
     }
 
-    /* We have to fill the extended memory with the new URL */
-    /* add at the end of p_cNewUrlForThisSession the content of l_cBufferForNewEntries and set the new size in p_iIndexOfNewEnd */
+    /* end of parsing, we have to add entries in the main buffer */
+    l_iStartingPositionOfBuffer  = strlen(p_cNewUrlForThisSession);
+    LOG_INFO("New entries [%s] to add after ...%c]", l_cBufferForNewEntries, p_cNewUrlForThisSession[l_iStartingPositionOfBuffer - 1]);
+    for(l_iIterator = 0; l_iIterator < (signed)strlen(l_cBufferForNewEntries) ; l_iIterator++)
+    {
+       p_cNewUrlForThisSession[l_iStartingPositionOfBuffer + l_iIterator] = l_cBufferForNewEntries[l_iIterator]; 
+    }
+
+    /* the new end of the buffer, in order to avoid overflow - INDEX OF THE LAST LETTER IN THE BUFFER \0 excluded*/
+    *p_iIndexOfNewEnd = l_iStartingPositionOfBuffer + l_iIterator;
+    LOG_INFO("New end of the buffer is %d and last character is %c", *p_iIndexOfNewEnd, p_cNewUrlForThisSession[*p_iIndexOfNewEnd]);
+    /* put the end character */
+    p_cNewUrlForThisSession[*p_iIndexOfNewEnd + 1] = '\0';
+
     return EXIT_SUCCESS;
 }
 
