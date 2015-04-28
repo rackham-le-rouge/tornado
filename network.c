@@ -91,6 +91,84 @@ int retrieveAnUrl(const char* p_cUrlToGet, struct MemoryStruct* p_structMemory)
 }
 
 
+
+/**
+  * @brief downloadNewEntries is the function made for download new pages taken from the index of the released commit on the site.
+  *         the new entries is taken from a buffer gived as a parameter
+  * @param p_cNewUrlForThisSession : long chain, storing all new pages to download
+  * @param p_iIndexOfNewEnd : integer to know where is the end of the p_cNewUrlForThisSession string
+  * @param p_cAlreadyDownloaded : double string table storing all the already downloaded pages. One line per page, storing a string corresponding to the end of the URL
+  * @param p_iNumberOfAlreadyDownloaded : number of already downloaded pages since the first start of the program
+  */
+void downloadNewEntries(char* p_cNewUrlForThisSession, char** p_cAlreadyDownloaded, int* p_iNumberOfAlreadyDownloaded)
+{
+        struct MemoryStruct l_structMemory;
+        char* l_cURL = (char*)malloc(URL_LENGTH*sizeof(char));
+        char l_bNoMoreToken;
+        char* l_cCurrentToken = (char*)malloc(URL_LENGTH*sizeof(char));
+
+        l_bNoMoreToken = FALSE;
+
+
+        while(l_bNoMoreToken == FALSE)
+        {
+                /* Extract the good token in the string in order to know witch page have to be downloaded */
+                extractAndEraseFirstToken(p_cNewUrlForThisSession, l_cCurrentToken);
+                LOG_INFO("The first token is : [%s]\nThe remaining sentence is :[%s]", l_cCurrentToken, p_cNewUrlForThisSession);
+
+                /* Build the URL to download */
+                strcpy(l_cURL, URL_PREFIX);
+                strcat(l_cURL, l_cCurrentToken);
+
+                if(retrieveAnUrl(URL_PREFIX , &l_structMemory) == EXIT_SUCCESS)
+                {
+                        /* means that the page is stored in l_structMemory->memory */
+                        LOG_INFO("retrieved %d", l_structMemory.size);
+
+                        /* Implement here the function to extract usefull content and save the page on the hard drive */
+                        LOG_INFO("Record retrieved... Not recorded yet on the hard drive...%s", " ");
+
+                        /* Add a record to the p_cAlreadyDownloaded at the last moment, don't forget to update p_iNumberOfAlreadyDownloaded */
+                        p_cAlreadyDownloaded = realloc(p_cAlreadyDownloaded, (*p_iNumberOfAlreadyDownloaded + 1)*sizeof(char*));
+                        if(p_cAlreadyDownloaded != NULL)
+                        {
+                            p_cAlreadyDownloaded[*p_iNumberOfAlreadyDownloaded] =  (char*)malloc(URL_LENGTH*sizeof(char));
+                            if(p_cAlreadyDownloaded[*p_iNumberOfAlreadyDownloaded] == NULL)
+                            {
+                                LOG_ERROR("realloc failed, no more memory avaible...%s", " ");
+                                return;
+                            }
+                            /* memory is reserved, thus, we can update the size, even if the copy failed... */
+                            p_iNumberOfAlreadyDownloaded++;
+
+                            strcpy(p_cAlreadyDownloaded[*p_iNumberOfAlreadyDownloaded - 1], l_cCurrentToken);
+                        }
+                        else
+                        {
+                            /* realloc failed -> no more memory :/ */
+                            LOG_ERROR("realloc failed, no more memory avaible...%s", " ");
+                            return;
+                        }
+
+                        if(l_structMemory.memory)
+                        {
+                                free(l_structMemory.memory);
+                        }
+                }
+                else
+                {
+                        LOG_ERROR("Network error on URL %s", l_cCurrentToken);
+                }
+        }
+
+        /* Function to clean p_cNewUrlForThisSession and have a clean string */
+        p_cNewUrlForThisSession = realloc(p_cNewUrlForThisSession, 1 * sizeof(char));
+
+        free(l_cCurrentToken);
+        free(l_cURL);
+}
+
+
 /**
   * @brief Main network function, this is for the site pooling. Pool the index page
   *        in order to get the needed URL (by calling a parser in order to extract URL from
@@ -98,7 +176,7 @@ int retrieveAnUrl(const char* p_cUrlToGet, struct MemoryStruct* p_structMemory)
   * @param p_iNumberOfAlreadyDownloaded : kind of index in the already downloaded buffer
   * @paramp_cAlreadyDownloaded : really long string with a tab behavior. Belonging all URL already downloaded
   */
-void networkLoop(int p_iNumberOfAlreadyDownloaded, char* p_cAlreadyDownloaded)
+void networkLoop(int* p_iNumberOfAlreadyDownloaded, char** p_cAlreadyDownloaded)
 {
         struct MemoryStruct l_structMemory;
         char* l_cNewUrlForThisSession = (char*)malloc(sizeof(char)); 
@@ -107,8 +185,6 @@ void networkLoop(int p_iNumberOfAlreadyDownloaded, char* p_cAlreadyDownloaded)
         /* init. there is a realloc just after in order to set the good size */
         l_cNewUrlForThisSession[0] = '\0';
 
-        UNUSED(p_iNumberOfAlreadyDownloaded);
-        UNUSED(p_cAlreadyDownloaded);
         /* One loop is one INDEX page pool. We have a lot of URL, we have to exact these ; find the new one by
            comparing with the older one ; and then download the newest ; store the new URL as a old one */ 
         if(retrieveAnUrl(URL_INDEX_OF_NEW, &l_structMemory) == EXIT_SUCCESS)
@@ -117,18 +193,25 @@ void networkLoop(int p_iNumberOfAlreadyDownloaded, char* p_cAlreadyDownloaded)
                 LOG_INFO("retrieved %d", l_structMemory.size);
 
                 parserForNewEntries(l_structMemory, l_cNewUrlForThisSession, &l_iIndexOfNewEnd);
-                /*downloadNewEntries(l_cNewUrlForThisSession,
-                                    l_iIndexOfNewEnd,
+                downloadNewEntries(l_cNewUrlForThisSession,
                                     p_cAlreadyDownloaded,
-                                    p_iNumberOfAlreadyDownloaded);*/
+                                    p_iNumberOfAlreadyDownloaded);
+                /* Currently useless... We supposed to manage the l_cNewUrlForThisSession buffer properly and
+                 * eventually leave some entries in order to download them after, when the program have more time.
+                 * But we don't. Anyway... Still here, and the idea too, maybee one day, a brave soul... */
+                l_iIndexOfNewEnd=0;
 
                 if(l_structMemory.memory)
                 {
                         free(l_structMemory.memory);
                 }
         }
-        else
+       else
         {
             LOG_ERROR("There is an error with the network, we cant load the page... Abort %s"," ");
         }
 }
+
+
+
+

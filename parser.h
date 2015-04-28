@@ -21,5 +21,6 @@
 */
 
 int parserForNewEntries(struct MemoryStruct p_structMemory, char* p_cNewUrlForThisSession, unsigned int* p_iIndexOfNewEnd);
+void extractAndEraseFirstToken(char* p_cNewUrlForThisSession, char* p_cFirstToken);
 
 #endif

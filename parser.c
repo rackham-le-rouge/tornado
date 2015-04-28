@@ -57,10 +57,10 @@ int parserForNewEntries(struct MemoryStruct p_structMemory, char* p_cNewUrlForTh
     }while(noMoreEntries == FALSE);
 
     /* We have to resize p_cNewUrlForThisSession according to the length of the string l_cBufferForNewEntries */
-    p_cNewUrlForThisSession = realloc(p_cNewUrlForThisSession, 
-                strlen((p_cNewUrlForThisSession) +
+    p_cNewUrlForThisSession = realloc(p_cNewUrlForThisSession, (
+                        strlen(p_cNewUrlForThisSession) +
                         strlen(l_cBufferForNewEntries) +
-                        1)*sizeof(char));    
+                        1 ) * sizeof(char));    
 
     if(p_cNewUrlForThisSession == NULL)
     {
@@ -85,3 +85,42 @@ int parserForNewEntries(struct MemoryStruct p_structMemory, char* p_cNewUrlForTh
     return EXIT_SUCCESS;
 }
 
+
+
+/**
+ * @brief extractAndEraseFirstToken
+ * In order to take the first token of the sentence and erase it. Thus, we assume to be able to
+ * lost a record if, in the next step we can't download the target
+ * @param p_cNewUrlForThisSession : the first sentence, where we have to found the token
+ * @param p_cFirstToken : the first token, and also the removed one from the main sentence
+ */
+void extractAndEraseFirstToken(char* p_cNewUrlForThisSession, char* p_cFirstToken)
+{
+    unsigned short int l_iIterator;
+    unsigned short int l_iSubIterator;
+
+    l_iIterator = 0;
+    l_iSubIterator = 0;
+
+
+    /* Scan the sentence until the end... */
+    while(p_cNewUrlForThisSession[l_iIterator] != '\0')
+    {
+        /* ...and avoid the ##### at the beginning of the sentence */
+        if(p_cNewUrlForThisSession[l_iIterator] != SEPARATION_CHARACTER)
+        {
+            /* When found something different from SEPARATION_CHARACTER, start the copy */
+            while(p_cNewUrlForThisSession[l_iIterator + l_iSubIterator] != SEPARATION_CHARACTER)
+            {
+                /* take it */
+                p_cFirstToken[l_iIterator] = p_cNewUrlForThisSession[l_iIterator + l_iSubIterator];
+                /* and remove it */
+                p_cNewUrlForThisSession[l_iIterator + l_iSubIterator] = SEPARATION_CHARACTER;
+                l_iSubIterator++;
+            }
+            /* dirty, but need to go out of the while loop */
+            break;
+        }
+        l_iIterator++;
+    }
+}
