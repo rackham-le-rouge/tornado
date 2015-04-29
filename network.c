@@ -185,6 +185,8 @@ void networkLoop(int* p_iNumberOfAlreadyDownloaded, char** p_cAlreadyDownloaded)
         /* init. there is a realloc just after in order to set the good size */
         l_cNewUrlForThisSession[0] = '\0';
 
+        LOG_INFO("Network loop - Entering... %s", " ");
+
         /* One loop is one INDEX page pool. We have a lot of URL, we have to exact these ; find the new one by
            comparing with the older one ; and then download the newest ; store the new URL as a old one */ 
         if(retrieveAnUrl(URL_INDEX_OF_NEW, &l_structMemory) == EXIT_SUCCESS)

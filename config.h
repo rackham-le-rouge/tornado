@@ -29,10 +29,10 @@
 /* Some constants */
 #define	DEBUG_LEVEL	                    3
 #define FILE_ALREADY_DONE               "alreadyDone.dat"
-#define URL_LENGTH                      10
+#define URL_LENGTH                      8
 #define URL_INDEX_OF_NEW                "http://pastebin.com/archive"
 #define URL_PREFIX                      "http://pastebin.com/"
-#define TOKEN_DELIMITER_FOR_NEW_ENTRIES "\"border=\"0\" /><a href=\"/"
+#define TOKEN_DELIMITER_FOR_NEW_ENTRIES "border=\"0\" /><a href=\"/"
 #define NUMBER_OF_ENTRIES_PER_PAGE      50
 #define SEPARATION_CHARACTER            '#'
 

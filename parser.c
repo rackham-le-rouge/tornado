@@ -36,13 +36,22 @@ int parserForNewEntries(struct MemoryStruct p_structMemory, char* p_cNewUrlForTh
     {
         /* find the next token */
         l_cCurrentToken = strstr(p_structMemory.memory, TOKEN_DELIMITER_FOR_NEW_ENTRIES);
+        /* because strstr gives the starting position of the searched sentence, but we
+         * are looking for the data juste after  */
+        l_cCurrentToken += strlen(TOKEN_DELIMITER_FOR_NEW_ENTRIES);
+
+        LOG_INFO("Downloaded page start with [%.50s]", p_structMemory.memory);
+        LOG_INFO("Token to segment the data is [%s]", TOKEN_DELIMITER_FOR_NEW_ENTRIES);
 
         if(l_cCurrentToken == NULL)
         {
+            LOG_INFO("No more token in this page... End or parsing.%s", " ");
             noMoreEntries = TRUE;
         }
         else
         {
+            LOG_INFO("New token found, [%.10s]", l_cCurrentToken);
+
             /* copy current token in the buffer */
             do
             {
