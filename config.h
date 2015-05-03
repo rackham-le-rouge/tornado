@@ -27,13 +27,13 @@
 #include <curl/curl.h>
 
 /* Some constants */
-#define	DEBUG_LEVEL	                    3
+#define	DEBUG_LEVEL	                    4
 #define FILE_ALREADY_DONE               "alreadyDone.dat"
-#define URL_LENGTH                      8
+#define URL_LENGTH                      10 /* At least add 1 to the real URL lenght for the \0 */
 #define URL_INDEX_OF_NEW                "http://pastebin.com/archive"
 #define URL_PREFIX                      "http://pastebin.com/"
 #define TOKEN_DELIMITER_FOR_NEW_ENTRIES "border=\"0\" /><a href=\"/"
-#define NUMBER_OF_ENTRIES_PER_PAGE      50
+#define NUMBER_OF_ENTRIES_PER_PAGE      150
 #define SEPARATION_CHARACTER            '#'
 
 /* Logic stuff */
@@ -66,6 +66,11 @@ struct MemoryStruct {
 
 #if(DEBUG_LEVEL > 2)
 #define LOG_INFO(p_sStr, ...)      fprintf(stderr, "%s INFO [%d]:" p_sStr "\n", __FILE__, __LINE__, __VA_ARGS__);
+#endif
+
+
+#if(DEBUG_LEVEL > 3)
+#define LOG_MSG(p_sStr)      fprintf(stderr, "%s INFO [%d]:" p_sStr "\n", __FILE__, __LINE__);
 #endif
 
 #include "parser.h"

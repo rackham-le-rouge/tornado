@@ -109,12 +109,13 @@ void downloadNewEntries(char* p_cNewUrlForThisSession, char** p_cAlreadyDownload
 
         l_bNoMoreToken = FALSE;
 
+        LOG_MSG("Download new entries - Entering into the function...");
 
         while(l_bNoMoreToken == FALSE)
         {
                 /* Extract the good token in the string in order to know witch page have to be downloaded */
                 extractAndEraseFirstToken(p_cNewUrlForThisSession, l_cCurrentToken);
-                LOG_INFO("The first token is : [%s]\nThe remaining sentence is :[%s]", l_cCurrentToken, p_cNewUrlForThisSession);
+                LOG_INFO("The first token is : [%s] -- The remaining sentence is :[%s]", l_cCurrentToken, p_cNewUrlForThisSession);
 
                 /* Build the URL to download */
                 strcpy(l_cURL, URL_PREFIX);
@@ -126,7 +127,7 @@ void downloadNewEntries(char* p_cNewUrlForThisSession, char** p_cAlreadyDownload
                         LOG_INFO("retrieved %d", l_structMemory.size);
 
                         /* Implement here the function to extract usefull content and save the page on the hard drive */
-                        LOG_INFO("Record retrieved... Not recorded yet on the hard drive...%s", " ");
+                        LOG_MSG("Record retrieved... Not recorded yet on the hard drive...");
 
                         /* Add a record to the p_cAlreadyDownloaded at the last moment, don't forget to update p_iNumberOfAlreadyDownloaded */
                         p_cAlreadyDownloaded = realloc(p_cAlreadyDownloaded, (*p_iNumberOfAlreadyDownloaded + 1)*sizeof(char*));
@@ -135,18 +136,18 @@ void downloadNewEntries(char* p_cNewUrlForThisSession, char** p_cAlreadyDownload
                             p_cAlreadyDownloaded[*p_iNumberOfAlreadyDownloaded] =  (char*)malloc(URL_LENGTH*sizeof(char));
                             if(p_cAlreadyDownloaded[*p_iNumberOfAlreadyDownloaded] == NULL)
                             {
-                                LOG_ERROR("realloc failed, no more memory avaible...%s", " ");
+                                LOG_ERROR("realloc failed, no more memory avaible...%s"," ");
                                 return;
                             }
-                            /* memory is reserved, thus, we can update the size, even if the copy failed... */
-                            p_iNumberOfAlreadyDownloaded++;
 
+                            /* memory is reserved, thus, we can update the size, even if the copy failed... */
+                            (*p_iNumberOfAlreadyDownloaded)++;
                             strcpy(p_cAlreadyDownloaded[*p_iNumberOfAlreadyDownloaded - 1], l_cCurrentToken);
                         }
                         else
                         {
                             /* realloc failed -> no more memory :/ */
-                            LOG_ERROR("realloc failed, no more memory avaible...%s", " ");
+                            LOG_ERROR("realloc failed, no more memory avaible...%s"," ");
                             return;
                         }
 
@@ -161,11 +162,12 @@ void downloadNewEntries(char* p_cNewUrlForThisSession, char** p_cAlreadyDownload
                 }
         }
 
-        /* Function to clean p_cNewUrlForThisSession and have a clean string */
-        p_cNewUrlForThisSession = realloc(p_cNewUrlForThisSession, 1 * sizeof(char));
-
+        /* Release the Kra... memory */
         free(l_cCurrentToken);
         free(l_cURL);
+
+        l_cCurrentToken = NULL;
+        l_cURL = NULL;
 }
 
 
@@ -179,13 +181,13 @@ void downloadNewEntries(char* p_cNewUrlForThisSession, char** p_cAlreadyDownload
 void networkLoop(int* p_iNumberOfAlreadyDownloaded, char** p_cAlreadyDownloaded)
 {
         struct MemoryStruct l_structMemory;
-        char* l_cNewUrlForThisSession = (char*)malloc(sizeof(char)); 
+        char* l_cNewUrlForThisSession = (char*)malloc(URL_LENGTH*NUMBER_OF_ENTRIES_PER_PAGE*sizeof(char)); 
         unsigned int l_iIndexOfNewEnd = 0;
 
-        /* init. there is a realloc just after in order to set the good size */
+        /* init.*/ 
         l_cNewUrlForThisSession[0] = '\0';
 
-        LOG_INFO("Network loop - Entering... %s", " ");
+        LOG_MSG("Network loop - Entering... ");
 
         /* One loop is one INDEX page pool. We have a lot of URL, we have to exact these ; find the new one by
            comparing with the older one ; and then download the newest ; store the new URL as a old one */ 
@@ -210,7 +212,7 @@ void networkLoop(int* p_iNumberOfAlreadyDownloaded, char** p_cAlreadyDownloaded)
         }
        else
         {
-            LOG_ERROR("There is an error with the network, we cant load the page... Abort %s"," ");
+            LOG_ERROR("There is an error with the network, we cant load the page... Abort.%s"," ");
         }
 }
 
