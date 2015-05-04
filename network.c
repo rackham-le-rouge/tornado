@@ -100,69 +100,102 @@ int retrieveAnUrl(const char* p_cUrlToGet, struct MemoryStruct* p_structMemory)
   * @param p_cAlreadyDownloaded : double string table storing all the already downloaded pages. One line per page, storing a string corresponding to the end of the URL
   * @param p_iNumberOfAlreadyDownloaded : number of already downloaded pages since the first start of the program
   */
-void downloadNewEntries(char* p_cNewUrlForThisSession, char** p_cAlreadyDownloaded, int* p_iNumberOfAlreadyDownloaded)
+void downloadNewEntries(char* p_cNewUrlForThisSession, char*** p_cAlreadyDownloaded, int* p_iNumberOfAlreadyDownloaded)
 {
         struct MemoryStruct l_structMemory;
-        char* l_cURL = (char*)malloc(URL_LENGTH*sizeof(char));
+        char* l_cURL = (char*)malloc((URL_LENGTH + strlen(URL_PREFIX) + 1)*sizeof(char));
         char l_bNoMoreToken;
         char* l_cCurrentToken = (char*)malloc(URL_LENGTH*sizeof(char));
+        char l_bNotAlreadyDownloaded;
+        int l_iIterator;
 
         l_bNoMoreToken = FALSE;
+        l_bNotAlreadyDownloaded = TRUE;
+        memset(l_cURL, '\0', URL_LENGTH + strlen(URL_PREFIX) + 1);
 
         LOG_MSG("Download new entries - Entering into the function...");
 
         while(l_bNoMoreToken == FALSE)
         {
-                /* Extract the good token in the string in order to know witch page have to be downloaded */
-                extractAndEraseFirstToken(p_cNewUrlForThisSession, l_cCurrentToken);
-                LOG_INFO("The first token is : [%s] -- The remaining sentence is :[%s]", l_cCurrentToken, p_cNewUrlForThisSession);
-
-                /* Build the URL to download */
-                strcpy(l_cURL, URL_PREFIX);
-                strcat(l_cURL, l_cCurrentToken);
-
-                if(retrieveAnUrl(URL_PREFIX , &l_structMemory) == EXIT_SUCCESS)
+                do
                 {
-                        /* means that the page is stored in l_structMemory->memory */
-                        LOG_INFO("retrieved %d", l_structMemory.size);
+                    /* Extract the good token in the string in order to know witch page have to be downloaded */
+                    extractAndEraseFirstToken(p_cNewUrlForThisSession, l_cCurrentToken);
 
-                        /* Implement here the function to extract usefull content and save the page on the hard drive */
-                        LOG_MSG("Record retrieved... Not recorded yet on the hard drive...");
+                    /* Find if there is no more token */
+                    if(l_cCurrentToken[0] == '\0')
+                    {
+                        /* means there is no more token, so put a TRUE and leave this function */
+                        l_bNoMoreToken = TRUE;
+                        LOG_MSG("There is no more token in this turn...");
+                        break;
+                    }
+                    else
+                    {
+                        l_bNotAlreadyDownloaded = FALSE;
+                    }
 
-                        /* Add a record to the p_cAlreadyDownloaded at the last moment, don't forget to update p_iNumberOfAlreadyDownloaded */
-                        p_cAlreadyDownloaded = realloc(p_cAlreadyDownloaded, (*p_iNumberOfAlreadyDownloaded + 1)*sizeof(char*));
-                        if(p_cAlreadyDownloaded != NULL)
+                    /* Find if we have already downloaded this URL */
+                    for(l_iIterator = 0; l_iIterator < *p_iNumberOfAlreadyDownloaded ; l_iIterator++)
+                    {
+                        l_bNotAlreadyDownloaded = strcmp((*p_cAlreadyDownloaded)[l_iIterator], l_cCurrentToken) == 0 ? TRUE : l_bNotAlreadyDownloaded;
+                    }
+                }while(l_bNotAlreadyDownloaded == TRUE);
+
+
+                if(l_bNoMoreToken != TRUE)
+                {
+                        /* Build the URL to download */
+                        strcpy(l_cURL, URL_PREFIX);
+                        strcat(l_cURL, l_cCurrentToken);
+
+                        LOG_INFO("The first token is : [%s] -- The remaining sentence is :[%s]", l_cCurrentToken, p_cNewUrlForThisSession);
+
+                        if(retrieveAnUrl(URL_PREFIX , &l_structMemory) == EXIT_SUCCESS)
                         {
-                            p_cAlreadyDownloaded[*p_iNumberOfAlreadyDownloaded] =  (char*)malloc(URL_LENGTH*sizeof(char));
-                            if(p_cAlreadyDownloaded[*p_iNumberOfAlreadyDownloaded] == NULL)
-                            {
-                                LOG_ERROR("realloc failed, no more memory avaible...%s"," ");
-                                return;
-                            }
+                                /* means that the page is stored in l_structMemory->memory */
+                                LOG_INFO("retrieved %d", l_structMemory.size);
 
-                            /* memory is reserved, thus, we can update the size, even if the copy failed... */
-                            (*p_iNumberOfAlreadyDownloaded)++;
-                            strcpy(p_cAlreadyDownloaded[*p_iNumberOfAlreadyDownloaded - 1], l_cCurrentToken);
+                                /* Implement here the function to extract usefull content and save the page on the hard drive */
+                                LOG_MSG("Record retrieved... Not recorded yet on the hard drive...");
+
+                                /* Add a record to the p_cAlreadyDownloaded at the last moment, don't forget to update p_iNumberOfAlreadyDownloaded */
+                                *p_cAlreadyDownloaded = realloc(*p_cAlreadyDownloaded, (*p_iNumberOfAlreadyDownloaded + 1)*sizeof(char*));
+                                if(*p_cAlreadyDownloaded != NULL)
+                                {
+                                        (*p_cAlreadyDownloaded)[*p_iNumberOfAlreadyDownloaded] =  (char*)malloc(URL_LENGTH*sizeof(char));
+                                        if((*p_cAlreadyDownloaded)[*p_iNumberOfAlreadyDownloaded] == NULL)
+                                        {
+                                                LOG_ERROR("realloc failed, no more memory avaible...%s"," ");
+                                                return;
+                                        }
+
+                                        /* memory is reserved, thus, we can update the size, even if the copy failed... */
+                                        (*p_iNumberOfAlreadyDownloaded)++;
+                                        strcpy((*p_cAlreadyDownloaded)[*p_iNumberOfAlreadyDownloaded - 1], l_cCurrentToken);
+                                }
+                                else
+                                {
+                                        /* realloc failed -> no more memory :/ */
+                                        LOG_ERROR("realloc failed, no more memory avaible...%s"," ");
+                                        return;
+                                }
+
+                                if(l_structMemory.memory)
+                                {
+                                        free(l_structMemory.memory);
+                                        l_structMemory.memory = NULL;
+                                }
                         }
                         else
                         {
-                            /* realloc failed -> no more memory :/ */
-                            LOG_ERROR("realloc failed, no more memory avaible...%s"," ");
-                            return;
+                                LOG_ERROR("Network error on URL %s", l_cCurrentToken);
                         }
-
-                        if(l_structMemory.memory)
-                        {
-                                free(l_structMemory.memory);
-                        }
-                }
-                else
-                {
-                        LOG_ERROR("Network error on URL %s", l_cCurrentToken);
                 }
         }
 
         /* Release the Kra... memory */
+        LOG_MSG("Release all memory of this turn...");
         free(l_cCurrentToken);
         free(l_cURL);
 
@@ -178,11 +211,12 @@ void downloadNewEntries(char* p_cNewUrlForThisSession, char** p_cAlreadyDownload
   * @param p_iNumberOfAlreadyDownloaded : kind of index in the already downloaded buffer
   * @paramp_cAlreadyDownloaded : really long string with a tab behavior. Belonging all URL already downloaded
   */
-void networkLoop(int* p_iNumberOfAlreadyDownloaded, char** p_cAlreadyDownloaded)
+void networkLoop(int* p_iNumberOfAlreadyDownloaded, char*** p_cAlreadyDownloaded)
 {
         struct MemoryStruct l_structMemory;
         char* l_cNewUrlForThisSession = (char*)malloc(URL_LENGTH*NUMBER_OF_ENTRIES_PER_PAGE*sizeof(char)); 
         unsigned int l_iIndexOfNewEnd = 0;
+        int l_iOldNumberOfAlreadyDownloaded = 0;
 
         /* init.*/ 
         l_cNewUrlForThisSession[0] = '\0';
@@ -197,17 +231,24 @@ void networkLoop(int* p_iNumberOfAlreadyDownloaded, char** p_cAlreadyDownloaded)
                 LOG_INFO("retrieved %d", l_structMemory.size);
 
                 parserForNewEntries(l_structMemory, l_cNewUrlForThisSession, &l_iIndexOfNewEnd);
+                l_iOldNumberOfAlreadyDownloaded = *p_iNumberOfAlreadyDownloaded;
                 downloadNewEntries(l_cNewUrlForThisSession,
                                     p_cAlreadyDownloaded,
                                     p_iNumberOfAlreadyDownloaded);
                 /* Currently useless... We supposed to manage the l_cNewUrlForThisSession buffer properly and
                  * eventually leave some entries in order to download them after, when the program have more time.
                  * But we don't. Anyway... Still here, and the idea too, maybee one day, a brave soul... */
-                l_iIndexOfNewEnd=0;
+                l_iIndexOfNewEnd = 0;
+
+                /* Save downloaded pages in the record - We have to put a * because p_cAlreadyDownloaded is a pointer on the real l_cAlreadyDownloaded array of string
+                 * thus we have to just send the array of string, not the pointer on the variable who store the pointer because we don't have to modify it */
+                LOG_MSG("Save the new visited pages...");
+                saveAlreadyTakenPageFile(*p_cAlreadyDownloaded, l_iOldNumberOfAlreadyDownloaded, *p_iNumberOfAlreadyDownloaded);
 
                 if(l_structMemory.memory)
                 {
                         free(l_structMemory.memory);
+                        l_structMemory.memory = NULL;
                 }
         }
        else

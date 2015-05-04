@@ -17,8 +17,9 @@
 
 int checkIfAFileExist(const char* p_cFileName);
 int checkReadWriteFile(const char* p_cFileName);
-unsigned int loadAlreadyTakenPageFile(char** p_cAlreadyDownloaded);
-unsigned int checkConfigurationFiles(char** p_cAlreadyDownloaded);
+unsigned int loadAlreadyTakenPageFile(char*** p_cAlreadyDownloaded);
+unsigned int checkConfigurationFiles(char*** p_cAlreadyDownloaded);
+unsigned int saveAlreadyTakenPageFile(char** p_cAlreadyDownloaded, int p_iOldAlreadyDownloaded, int p_iAlreadyDownloaded);
 
 
 

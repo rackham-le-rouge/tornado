@@ -96,13 +96,14 @@ int parserForNewEntries(struct MemoryStruct p_structMemory, char* p_cNewUrlForTh
  * @brief extractAndEraseFirstToken
  * In order to take the first token of the sentence and erase it. Thus, we assume to be able to
  * lost a record if, in the next step we can't download the target
- * @param p_cNewUrlForThisSession : the first sentence, where we have to found the token
+ * @param p_cNewUrlForThisSession : the first sentence, where we have to found the token, if there is no more token, p_cFirstToken[0] == '\0'
  * @param p_cFirstToken : the first token, and also the removed one from the main sentence
  */
 void extractAndEraseFirstToken(char* p_cNewUrlForThisSession, char* p_cFirstToken)
 {
     unsigned short int l_iIterator;
     unsigned short int l_iSubIterator;
+    char l_bNothingFound = TRUE;
 
     l_iIterator = 0;
     l_iSubIterator = 0;
@@ -126,9 +127,16 @@ void extractAndEraseFirstToken(char* p_cNewUrlForThisSession, char* p_cFirstToke
             /* the previous ++ put us at the end of the buffer, set the end character */
             p_cFirstToken[l_iSubIterator] = '\0';
 
+            l_bNothingFound = FALSE;
+
             /* dirty, but need to go out of the while loop */
             break;
         }
         l_iIterator++;
+    }
+    /* If there is no more token in this string */
+    if(l_bNothingFound == TRUE)
+    {
+        p_cFirstToken[0] = '\0';
     }
 }
