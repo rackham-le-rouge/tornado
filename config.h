@@ -29,16 +29,16 @@
 /* Some constants */
 #define	DEBUG_LEVEL	                    4
 #define FILE_ALREADY_DONE               "alreadyDone.dat"
-#define URL_LENGTH                      10 /* At least add 1 to the real URL lenght for the \0 */
+#define URL_LENGTH                      9 /* At least add 1 to the real URL lenght for the \0 */
 #define URL_INDEX_OF_NEW                "http://pastebin.com/archive"
 #define URL_PREFIX                      "http://pastebin.com/"
 #define TOKEN_DELIMITER_FOR_NEW_ENTRIES "border=\"0\" /><a href=\"/"
 #define NUMBER_OF_ENTRIES_PER_PAGE      150
-#define SEPARATION_CHARACTER            '#'
+#define SEPARATION_CHARACTER            '#'     /* only one character allowed */
 #define WAIT_TIME_MAX                   15
 #define WAIT_TIME_MIN                   5
-#define WAIT_TIME_URL_MAX               10
-#define WAIT_TIME_URL_MIN               5
+#define WAIT_TIME_URL_MAX               2
+#define WAIT_TIME_URL_MIN               1
 
 
 /* Logic stuff */

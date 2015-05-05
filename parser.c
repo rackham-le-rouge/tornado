@@ -25,15 +25,17 @@ int parserForNewEntries(struct MemoryStruct p_structMemory, char* p_cNewUrlForTh
 {
     enum boolean noMoreEntries = FALSE;
     char* l_cCurrentToken = NULL;
-    char* l_cBufferForNewEntries = (char*)malloc((URL_LENGTH*NUMBER_OF_ENTRIES_PER_PAGE)*sizeof(char));
+    char* l_cBufferForNewEntries = (char*)malloc((URL_LENGTH*NUMBER_OF_ENTRIES_PER_PAGE + 1)*sizeof(char));
     int l_iIndex = 0;
-    int l_iBufferForNewEntriesIndex = 0;
     int l_iStartingPositionOfBuffer = 0;
     int l_iIterator = 0;
     int l_iCurrentToken = 0;
 
 
     UNUSED(p_iIndexOfNewEnd);
+
+    /* Fill now with separation character */
+    memset(l_cBufferForNewEntries, SEPARATION_CHARACTER, URL_LENGTH*NUMBER_OF_ENTRIES_PER_PAGE + 1);
 
     /* we create a buffer for new entries holding data like that : END_OF_URL1#END_OF_URL2#\0 */
     do
@@ -50,23 +52,27 @@ int parserForNewEntries(struct MemoryStruct p_structMemory, char* p_cNewUrlForTh
         else
         {
             LOG_INFO("New token found, [%.8s]", l_cCurrentToken + strlen(TOKEN_DELIMITER_FOR_NEW_ENTRIES));
-            l_iCurrentToken++;
 
             /* because strstr gives the starting position of the searched sentence, but we
              * are looking for the data juste after. And clean the token in the the string  */
             memset(l_cCurrentToken, SEPARATION_CHARACTER, strlen(TOKEN_DELIMITER_FOR_NEW_ENTRIES));
             l_cCurrentToken += strlen(TOKEN_DELIMITER_FOR_NEW_ENTRIES);
 
-            /* copy current token in the buffer */
+            /* copy current token in the buffer, but use a reverse way in order to have the last record in first */
             do
             {
-                l_cBufferForNewEntries[l_iBufferForNewEntriesIndex++] = l_cCurrentToken[l_iIndex++];
-            }while(l_cCurrentToken[l_iIndex] != '\"');            /* cause the end of a new address is a " */
-            l_iIndex = 0;
+                LOG_INFO("position -%d- l_iCurrentToken, %d strlen %d index %d", (NUMBER_OF_ENTRIES_PER_PAGE - l_iCurrentToken - 1)*(8 + 1)+ l_iIndex, l_iCurrentToken, 8, l_iIndex);
+                l_cBufferForNewEntries[(NUMBER_OF_ENTRIES_PER_PAGE - l_iCurrentToken - 1)
+                        *(8 + 1)
+                        + l_iIndex] 
+                        = l_cCurrentToken[l_iIndex];
+            }while(l_cCurrentToken[++l_iIndex] != '\"');            /* cause the end of a new address is a " */
 
-            /* close this entrie by adding a # */
-            l_cBufferForNewEntries[l_iBufferForNewEntriesIndex++] = SEPARATION_CHARACTER;
-            l_cBufferForNewEntries[l_iBufferForNewEntriesIndex] = '\0';
+            /* close the line adding a \0 */
+            l_cBufferForNewEntries[URL_LENGTH*NUMBER_OF_ENTRIES_PER_PAGE] = '\0';
+
+            l_iIndex = 0;
+            l_iCurrentToken++;
         }
     }while(noMoreEntries == FALSE);
     LOG_MSG("End of this page. Leave the loop...");
