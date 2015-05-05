@@ -217,44 +217,56 @@ void networkLoop(int* p_iNumberOfAlreadyDownloaded, char*** p_cAlreadyDownloaded
         char* l_cNewUrlForThisSession = (char*)malloc(URL_LENGTH*NUMBER_OF_ENTRIES_PER_PAGE*sizeof(char)); 
         unsigned int l_iIndexOfNewEnd = 0;
         int l_iOldNumberOfAlreadyDownloaded = 0;
+        char l_bStopStalking = FALSE;
 
         /* init.*/ 
         l_cNewUrlForThisSession[0] = '\0';
 
         LOG_MSG("Network loop - Entering... ");
 
-        /* One loop is one INDEX page pool. We have a lot of URL, we have to exact these ; find the new one by
-           comparing with the older one ; and then download the newest ; store the new URL as a old one */ 
-        if(retrieveAnUrl(URL_INDEX_OF_NEW, &l_structMemory) == EXIT_SUCCESS)
+        while(l_bStopStalking == FALSE)
         {
-                /* means that the page is stored in l_structMemory->memory */
-                LOG_INFO("retrieved %d", l_structMemory.size);
+                /* A mecanism to stop the loop FIXME*/
+                if(URL_LENGTH > 100) l_bStopStalking = TRUE;
 
-                parserForNewEntries(l_structMemory, l_cNewUrlForThisSession, &l_iIndexOfNewEnd);
-                l_iOldNumberOfAlreadyDownloaded = *p_iNumberOfAlreadyDownloaded;
-                downloadNewEntries(l_cNewUrlForThisSession,
-                                    p_cAlreadyDownloaded,
-                                    p_iNumberOfAlreadyDownloaded);
-                /* Currently useless... We supposed to manage the l_cNewUrlForThisSession buffer properly and
-                 * eventually leave some entries in order to download them after, when the program have more time.
-                 * But we don't. Anyway... Still here, and the idea too, maybee one day, a brave soul... */
-                l_iIndexOfNewEnd = 0;
-
-                /* Save downloaded pages in the record - We have to put a * because p_cAlreadyDownloaded is a pointer on the real l_cAlreadyDownloaded array of string
-                 * thus we have to just send the array of string, not the pointer on the variable who store the pointer because we don't have to modify it */
-                LOG_MSG("Save the new visited pages...");
-                saveAlreadyTakenPageFile(*p_cAlreadyDownloaded, l_iOldNumberOfAlreadyDownloaded, *p_iNumberOfAlreadyDownloaded);
-
-                if(l_structMemory.memory)
+                /* One loop is one INDEX page pool. We have a lot of URL, we have to exact these ; find the new one by
+                   comparing with the older one ; and then download the newest ; store the new URL as a old one */ 
+                if(retrieveAnUrl(URL_INDEX_OF_NEW, &l_structMemory) == EXIT_SUCCESS)
                 {
-                        free(l_structMemory.memory);
-                        l_structMemory.memory = NULL;
+                        /* means that the page is stored in l_structMemory->memory */
+                        LOG_INFO("retrieved %d", l_structMemory.size);
+
+                        parserForNewEntries(l_structMemory, l_cNewUrlForThisSession, &l_iIndexOfNewEnd);
+                        l_iOldNumberOfAlreadyDownloaded = *p_iNumberOfAlreadyDownloaded;
+                        downloadNewEntries(l_cNewUrlForThisSession,
+                                            p_cAlreadyDownloaded,
+                                            p_iNumberOfAlreadyDownloaded);
+                        /* Currently useless... We supposed to manage the l_cNewUrlForThisSession buffer properly and
+                         * eventually leave some entries in order to download them after, when the program have more time.
+                         * But we don't. Anyway... Still here, and the idea too, maybee one day, a brave soul... */
+                        l_iIndexOfNewEnd = 0;
+
+                        /* Save downloaded pages in the record - We have to put a * because p_cAlreadyDownloaded is a pointer on the real l_cAlreadyDownloaded array of string
+                         * thus we have to just send the array of string, not the pointer on the variable who store the pointer because we don't have to modify it */
+                        LOG_MSG("Save the new visited pages...");
+                        saveAlreadyTakenPageFile(*p_cAlreadyDownloaded, l_iOldNumberOfAlreadyDownloaded, *p_iNumberOfAlreadyDownloaded);
+
+                        /* FIXME - wait another records */
+                        sleep(15);
+
+                        if(l_structMemory.memory)
+                        {
+                                free(l_structMemory.memory);
+                                l_structMemory.memory = NULL;
+                        }
+                }
+               else
+                {
+                    LOG_ERROR("There is an error with the network, we cant load the page... Abort.%s"," ");
                 }
         }
-       else
-        {
-            LOG_ERROR("There is an error with the network, we cant load the page... Abort.%s"," ");
-        }
+
+        LOG_MSG("Network loop broken by user. Program's ending is near...");
 }
 
 

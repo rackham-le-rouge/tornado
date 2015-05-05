@@ -165,16 +165,10 @@ unsigned int saveAlreadyTakenPageFile(char** p_cAlreadyDownloaded, int p_iOldAlr
   */
 unsigned int checkConfigurationFiles(char*** p_cAlreadyDownloaded)
 {
-    if(0) //checkIfAFileExist(FILE_ALREADY_DONE) == EXIT_FAILURE)
+    if(checkIfAFileExist(FILE_ALREADY_DONE) == EXIT_FAILURE)
     {
         /* Means that we are in the first start or something like that */
         LOG_INFO("%s is not currently here. Means you are starting for the first time ?", FILE_ALREADY_DONE);
-        return 0;
-    }
-    if(0) //checkReadWriteFile(FILE_ALREADY_DONE) == EXIT_FAILURE)
-    {
-        /* Means this is a read only file. We don't want it */
-        LOG_INFO("%s is a read only file. We need the Write access on it in order to save download progression.", FILE_ALREADY_DONE);
         return 0;
     }
 

@@ -72,7 +72,8 @@ int parserForNewEntries(struct MemoryStruct p_structMemory, char* p_cNewUrlForTh
     LOG_MSG("End of this page. Leave the loop...");
 
     /* end of parsing, we have to add entries in the main buffer */
-    l_iStartingPositionOfBuffer  = strlen(p_cNewUrlForThisSession);
+    /* l_iStartingPositionOfBuffer  = strlen(p_cNewUrlForThisSession); */
+    l_iStartingPositionOfBuffer = 0;    /* cause we reset this buffer each time */
     LOG_INFO("l_iStartingPositionOfBuffer %d", l_iStartingPositionOfBuffer);
     LOG_INFO("New entries [%s] to add", l_cBufferForNewEntries);
     for(l_iIterator = 0; l_iIterator < (signed)strlen(l_cBufferForNewEntries) ; l_iIterator++)
@@ -80,7 +81,6 @@ int parserForNewEntries(struct MemoryStruct p_structMemory, char* p_cNewUrlForTh
        p_cNewUrlForThisSession[l_iStartingPositionOfBuffer + l_iIterator] = l_cBufferForNewEntries[l_iIterator]; 
     }
     LOG_INFO("l_iIterator %d", l_iIterator);
-
 
 
     /* Release local memory */
@@ -102,6 +102,7 @@ int parserForNewEntries(struct MemoryStruct p_structMemory, char* p_cNewUrlForTh
 void extractAndEraseFirstToken(char* p_cNewUrlForThisSession, char* p_cFirstToken)
 {
     unsigned short int l_iIterator;
+
     unsigned short int l_iSubIterator;
     char l_bNothingFound = TRUE;
 
