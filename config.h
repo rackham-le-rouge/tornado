@@ -39,7 +39,7 @@
 #define WAIT_TIME_MIN                   5
 #define WAIT_TIME_URL_MAX               2
 #define WAIT_TIME_URL_MIN               1
-
+#define MAX_URL_BEFORE_SAVING           2
 
 /* Logic stuff */
 enum boolean

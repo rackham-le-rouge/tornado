@@ -108,6 +108,7 @@ void downloadNewEntries(char* p_cNewUrlForThisSession, char*** p_cAlreadyDownloa
         char* l_cCurrentToken = (char*)malloc(URL_LENGTH*sizeof(char));
         char l_bNotAlreadyDownloaded;
         int l_iIterator;
+        int l_iCurrentToken = 0;
 
         l_bNoMoreToken = FALSE;
         l_bNotAlreadyDownloaded = TRUE;
@@ -194,6 +195,13 @@ void downloadNewEntries(char* p_cNewUrlForThisSession, char*** p_cAlreadyDownloa
                         {
                                 LOG_ERROR("Network error on URL %s", l_cCurrentToken);
                         }
+                }
+                /* Count the number of URL retrieved for this session */
+                l_iCurrentToken++;
+
+                if(l_iCurrentToken > MAX_URL_BEFORE_SAVING)
+                {
+                    l_bNoMoreToken = TRUE;
                 }
         }
 
