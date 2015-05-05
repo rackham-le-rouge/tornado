@@ -21,5 +21,7 @@
 */
 
 
+void waitBetweenTwoTurn(void);
+void waitBetweenTwoURL(void);
 
 #endif

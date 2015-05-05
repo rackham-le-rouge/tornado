@@ -28,6 +28,30 @@ char rev[] = "0.1";
 
 
 
+/** waitBetweenTwoTurn
+  * @brief In order to be like a human browsing the site, we have to add some function in order to add a random behaviour
+  */
+void waitBetweenTwoTurn(void)
+{
+    /* Firstly wait between two main page download */
+    sleep(rand() % WAIT_TIME_MAX + WAIT_TIME_MIN); 
+
+    /* TODO Make some random click, or other on the page, in order to create a real fool */
+}
+
+/** waitBetweenTwoURL
+  * @brief In order to be like a human, wait between two page download, less than the time needed between two turn but still some seconds
+  */
+void waitBetweenTwoURL(void)
+{
+    /* Firstly wait between two main page download */
+    sleep(rand() % WAIT_TIME_URL_MAX + WAIT_TIME_URL_MIN); 
+}
+
+
+
+
+
 /** Main
   * @brief Main function of the program, this is the starting point
   * @param argc : number of parameters gived to the program
@@ -40,6 +64,8 @@ int main(int argc, char** argv)
 
     UNUSED(argc);
     UNUSED(argv);
+
+    srand(time(NULL));
 
     LOG_INFO( "\n-------------------------------------\n"
                 "         Tornado %s starting\n"

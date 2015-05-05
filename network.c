@@ -159,6 +159,9 @@ void downloadNewEntries(char* p_cNewUrlForThisSession, char*** p_cAlreadyDownloa
                                 /* Implement here the function to extract usefull content and save the page on the hard drive */
                                 LOG_MSG("Record retrieved... Not recorded yet on the hard drive...");
 
+                                /* Just wait a little bit in order to be forgotten by the website */
+                                waitBetweenTwoURL();
+        
                                 /* Add a record to the p_cAlreadyDownloaded at the last moment, don't forget to update p_iNumberOfAlreadyDownloaded */
                                 *p_cAlreadyDownloaded = realloc(*p_cAlreadyDownloaded, (*p_iNumberOfAlreadyDownloaded + 1)*sizeof(char*));
                                 if(*p_cAlreadyDownloaded != NULL)
@@ -252,7 +255,7 @@ void networkLoop(int* p_iNumberOfAlreadyDownloaded, char*** p_cAlreadyDownloaded
                         saveAlreadyTakenPageFile(*p_cAlreadyDownloaded, l_iOldNumberOfAlreadyDownloaded, *p_iNumberOfAlreadyDownloaded);
 
                         /* FIXME - wait another records */
-                        sleep(15);
+                        waitBetweenTwoTurn();
 
                         if(l_structMemory.memory)
                         {

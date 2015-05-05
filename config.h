@@ -35,6 +35,11 @@
 #define TOKEN_DELIMITER_FOR_NEW_ENTRIES "border=\"0\" /><a href=\"/"
 #define NUMBER_OF_ENTRIES_PER_PAGE      150
 #define SEPARATION_CHARACTER            '#'
+#define WAIT_TIME_MAX                   15
+#define WAIT_TIME_MIN                   5
+#define WAIT_TIME_URL_MAX               10
+#define WAIT_TIME_URL_MIN               5
+
 
 /* Logic stuff */
 enum boolean
