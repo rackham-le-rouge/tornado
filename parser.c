@@ -147,3 +147,44 @@ void extractAndEraseFirstToken(char* p_cNewUrlForThisSession, char* p_cFirstToke
         p_cFirstToken[0] = '\0';
     }
 }
+
+
+/**
+ * @brief extractDataFromAPage
+ * After the URL download, we have to parse the page in order to extract usefull content,
+ * save it in memory, and send back the address of the memory using the variable given
+ * as a parameter
+ * @param p_structMemory : data retrieved, the page is in the memory section
+ * @param p_cDataOfAPage : pointer to a string where the function have to save the data
+ */
+void extractDataFromAPage(struct MemoryStruct p_structMemory, char** p_cDataOfAPage)
+{
+    char* l_cBeginning = NULL;
+    char* l_cEnd = NULL;
+    int l_iSize = 0;
+
+    /* Find the initialization value of the loopo */
+    l_cBeginning = strstr(p_structMemory.memory, TOKEN_DELIMITER_FOR_DATA_START);
+    l_cBeginning += strlen(TOKEN_DELIMITER_FOR_DATA_START);
+
+    /* Compute size of data to save */
+    l_cEnd = strstr(p_structMemory.memory, TOKEN_DELIMITER_FOR_DATA_END);
+    l_iSize = l_cEnd - l_cBeginning;
+
+    LOG_INFO("Size of this page: %d", l_iSize);
+
+    if(++l_iSize > (signed)p_structMemory.size)
+    {
+        LOG_WARNING("There is an error, instersting data are bigger than the page itself: %d", l_iSize);
+    }
+    else
+    {
+        /* Memory allocation */
+        *p_cDataOfAPage = (char*)malloc(l_iSize*sizeof(char));
+
+        /* Copy */
+        memcpy(*p_cDataOfAPage, l_cBeginning, l_iSize);
+        (*p_cDataOfAPage)[l_iSize - 1] = '\0';
+    }
+    /* LOG_INFO("Data: %s", (*p_cDataOfAPage)); */
+}

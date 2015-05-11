@@ -71,7 +71,7 @@ int retrieveAnUrl(const char* p_cUrlToGet, struct MemoryStruct* p_structMemory)
 
         /* some servers don't like requests that are made without a user-agent
            field, so we provide one */ 
-        curl_easy_setopt(l_curlHandler, CURLOPT_USERAGENT, "libcurl-agent/1.0");
+        curl_easy_setopt(l_curlHandler, CURLOPT_USERAGENT, "Mozilla/5.0 (X11; Linux i686; rv:31.0) Gecko/20100101 Firefox/31.0 Iceweasel/31.6.0");    //libcurl-agent/1.0");
 
         /* get it! */ 
         l_curlResponseCode = curl_easy_perform(l_curlHandler);
@@ -106,6 +106,7 @@ void downloadNewEntries(char* p_cNewUrlForThisSession, char*** p_cAlreadyDownloa
         char* l_cURL = (char*)malloc((URL_LENGTH + strlen(URL_PREFIX) + 1)*sizeof(char));
         char l_bNoMoreToken;
         char* l_cCurrentToken = (char*)malloc(URL_LENGTH*sizeof(char));
+        char* l_cDataOfAPage = NULL; 
         char l_bNotAlreadyDownloaded;
         int l_iIterator;
         int l_iCurrentToken = 0;
@@ -152,17 +153,26 @@ void downloadNewEntries(char* p_cNewUrlForThisSession, char*** p_cAlreadyDownloa
 
                         LOG_INFO("The first token is : [%s] -- The remaining sentence is :[%s]", l_cCurrentToken, p_cNewUrlForThisSession);
 
-                        if(retrieveAnUrl(URL_PREFIX , &l_structMemory) == EXIT_SUCCESS)
+                        if(retrieveAnUrl(l_cURL, &l_structMemory) == EXIT_SUCCESS)
                         {
                                 /* means that the page is stored in l_structMemory->memory */
                                 LOG_INFO("retrieved %d", l_structMemory.size);
 
                                 /* Implement here the function to extract usefull content and save the page on the hard drive */
-                                LOG_MSG("Record retrieved... Not recorded yet on the hard drive...");
+                                extractDataFromAPage(l_structMemory, &l_cDataOfAPage);
+
+                                /* Save the just downloaded page */
+                                /* FIXME */
 
                                 /* Just wait a little bit in order to be forgotten by the website */
                                 waitBetweenTwoURL();
         
+                                /* Release memory needed by the save function, don't use realloc */
+                                if(l_cDataOfAPage != NULL)
+                                {
+                                    free(l_cDataOfAPage);
+                                }
+
                                 /* Add a record to the p_cAlreadyDownloaded at the last moment, don't forget to update p_iNumberOfAlreadyDownloaded */
                                 *p_cAlreadyDownloaded = realloc(*p_cAlreadyDownloaded, (*p_iNumberOfAlreadyDownloaded + 1)*sizeof(char*));
                                 if(*p_cAlreadyDownloaded != NULL)
@@ -199,7 +209,7 @@ void downloadNewEntries(char* p_cNewUrlForThisSession, char*** p_cAlreadyDownloa
                 /* Count the number of URL retrieved for this session */
                 l_iCurrentToken++;
 
-                if(l_iCurrentToken > MAX_URL_BEFORE_SAVING)
+                if(l_iCurrentToken >= MAX_URL_BEFORE_SAVING)
                 {
                     l_bNoMoreToken = TRUE;
                 }

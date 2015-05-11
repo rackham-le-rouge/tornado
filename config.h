@@ -33,6 +33,8 @@
 #define URL_INDEX_OF_NEW                "http://pastebin.com/archive"
 #define URL_PREFIX                      "http://pastebin.com/"
 #define TOKEN_DELIMITER_FOR_NEW_ENTRIES "border=\"0\" /><a href=\"/"
+#define TOKEN_DELIMITER_FOR_DATA_START  "onkeydown=\"return catchTab(this,event)\">"
+#define TOKEN_DELIMITER_FOR_DATA_END    "</textarea>"
 #define NUMBER_OF_ENTRIES_PER_PAGE      150
 #define SEPARATION_CHARACTER            '#'     /* only one character allowed */
 #define WAIT_TIME_MAX                   15
