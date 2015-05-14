@@ -157,6 +157,55 @@ unsigned int saveAlreadyTakenPageFile(char** p_cAlreadyDownloaded, int p_iOldAlr
     return EXIT_SUCCESS;
 }
 
+
+/** @brief saveDownloadedPage
+  * Save the usefull content of a page on the hard drive
+  * @param p_cFileName : name of the downloaded page to save
+  * @param p_cDataOfAPage : string holding the data of the page
+  * @return EXIT_SUCCESS if success or EXIT_FAILURE in the other cases.
+  */
+int saveDownloadedPage(char* p_cFileName, char* p_cDataOfAPage)
+{
+    FILE* l_fileFile = NULL;
+    char* l_cFileName = (char*)malloc((strlen(p_cFileName) + strlen(RAW_PAGES_DIRECTORY) + 2)*sizeof(char));
+
+    if(p_cFileName == NULL)
+    {
+        return EXIT_FAILURE;
+    }
+
+    strcpy(l_cFileName, RAW_PAGES_DIRECTORY);
+    l_cFileName[strlen(RAW_PAGES_DIRECTORY)] = '/';
+    l_cFileName[strlen(RAW_PAGES_DIRECTORY) + 1] = '\0';
+    strcat(l_cFileName, p_cFileName);
+
+    l_fileFile = fopen(l_cFileName, "w+");
+    if(l_fileFile != NULL)
+    {
+       /* in a secured version, use fnprintf FIXME */
+       fprintf(l_fileFile, "%s", p_cDataOfAPage); 
+       fclose(l_fileFile);
+
+       free(l_cFileName);
+       return EXIT_SUCCESS;
+    }
+
+    free(l_cFileName);
+    return EXIT_FAILURE;
+}
+
+/** @brief createDirectory
+  * Create a directory
+  * @param p_cName : directory' name
+  * @return EXIT_SUCCESS if success or EXIT_FAILURE in the other cases.
+  */
+int createDirectory(char* p_cName)
+{
+    LOG_INFO("Going to create directory %s", p_cName);
+    return mkdir(p_cName, 0755);
+}
+
+
 /** @brief
   * checkConfigurationFiles is the main function to tests all needed files.
   * that's here we proceed to all calls for checks existance or rights on the needed files.
@@ -165,12 +214,19 @@ unsigned int saveAlreadyTakenPageFile(char** p_cAlreadyDownloaded, int p_iOldAlr
   */
 unsigned int checkConfigurationFiles(char*** p_cAlreadyDownloaded)
 {
+    char l_cDirectory[] = RAW_PAGES_DIRECTORY; 
+
+
     if(checkIfAFileExist(FILE_ALREADY_DONE) == EXIT_FAILURE)
     {
         /* Means that we are in the first start or something like that */
         LOG_INFO("%s is not currently here. Means you are starting for the first time ?", FILE_ALREADY_DONE);
         return 0;
     }
+
+    /* Doesn't care about the ret code, because EEXIST seems to be K.O, this 
+     * function always send back -1 instead of a smarter code */
+    createDirectory(l_cDirectory);
 
     return loadAlreadyTakenPageFile(p_cAlreadyDownloaded);    
 }

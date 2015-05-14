@@ -35,6 +35,7 @@
 #define TOKEN_DELIMITER_FOR_NEW_ENTRIES "border=\"0\" /><a href=\"/"
 #define TOKEN_DELIMITER_FOR_DATA_START  "onkeydown=\"return catchTab(this,event)\">"
 #define TOKEN_DELIMITER_FOR_DATA_END    "</textarea>"
+#define RAW_PAGES_DIRECTORY             "records"
 #define NUMBER_OF_ENTRIES_PER_PAGE      150
 #define SEPARATION_CHARACTER            '#'     /* only one character allowed */
 #define WAIT_TIME_MAX                   15

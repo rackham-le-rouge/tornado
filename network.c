@@ -162,7 +162,7 @@ void downloadNewEntries(char* p_cNewUrlForThisSession, char*** p_cAlreadyDownloa
                                 extractDataFromAPage(l_structMemory, &l_cDataOfAPage);
 
                                 /* Save the just downloaded page */
-                                /* FIXME */
+                                saveDownloadedPage(l_cCurrentToken, l_cDataOfAPage);
 
                                 /* Just wait a little bit in order to be forgotten by the website */
                                 waitBetweenTwoURL();

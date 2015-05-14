@@ -61,7 +61,6 @@ int parserForNewEntries(struct MemoryStruct p_structMemory, char* p_cNewUrlForTh
             /* copy current token in the buffer, but use a reverse way in order to have the last record in first */
             do
             {
-                LOG_INFO("position -%d- l_iCurrentToken, %d strlen %d index %d", (NUMBER_OF_ENTRIES_PER_PAGE - l_iCurrentToken - 1)*(8 + 1)+ l_iIndex, l_iCurrentToken, 8, l_iIndex);
                 l_cBufferForNewEntries[(NUMBER_OF_ENTRIES_PER_PAGE - l_iCurrentToken - 1)
                         *(8 + 1)
                         + l_iIndex] 
@@ -80,13 +79,11 @@ int parserForNewEntries(struct MemoryStruct p_structMemory, char* p_cNewUrlForTh
     /* end of parsing, we have to add entries in the main buffer */
     /* l_iStartingPositionOfBuffer  = strlen(p_cNewUrlForThisSession); */
     l_iStartingPositionOfBuffer = 0;    /* cause we reset this buffer each time */
-    LOG_INFO("l_iStartingPositionOfBuffer %d", l_iStartingPositionOfBuffer);
     LOG_INFO("New entries [%s] to add", l_cBufferForNewEntries);
     for(l_iIterator = 0; l_iIterator < (signed)strlen(l_cBufferForNewEntries) ; l_iIterator++)
     {
        p_cNewUrlForThisSession[l_iStartingPositionOfBuffer + l_iIterator] = l_cBufferForNewEntries[l_iIterator]; 
     }
-    LOG_INFO("l_iIterator %d", l_iIterator);
 
 
     /* Release local memory */
