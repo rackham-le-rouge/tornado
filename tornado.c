@@ -48,7 +48,62 @@ void waitBetweenTwoURL(void)
     sleep(rand() % WAIT_TIME_URL_MAX + WAIT_TIME_URL_MIN); 
 }
 
+/** getWindowsSize
+  * @brief Get back the size of the screen in order to display a progress bar
+  * @param p_iRow : row of the screen
+  * @param p_iCol : column of the screen
+  */
+void getWindowsSize(unsigned int* p_iRow, unsigned int* p_iCol)
+{
+    struct winsize l_structWinSize;
+    ioctl(0, TIOCGWINSZ, &l_structWinSize);
 
+    *p_iRow = l_structWinSize.ws_row;
+    *p_iCol = l_structWinSize.ws_col;
+}
+
+
+/** printProgressBar
+  * @brief Display informations of the progression of the program's execution
+  * @param p_iMax,p_iMax : max value to reach
+  * @param p_iCurrentValue : current value between 0 and the max
+  */
+void printProgressBar(unsigned int p_iMax, unsigned int p_iCurrentValue)
+{
+   char* l_cLineBuffer;
+	unsigned int l_iIterateur = 0;
+	unsigned int l_iPercent = 0;
+	unsigned int l_iColumn = 0;
+	char l_cCaracterBody = PROGRESS_BAR_BODY_CHARACTER;
+	char l_cCaracterHead = PROGRESS_BAR_HEAD_CHARACTER;
+	unsigned int l_iScreenLenght = -1;
+
+   getWindowsSize(&l_iColumn, &l_iScreenLenght);
+
+   l_cLineBuffer = (char*)malloc((l_iScreenLenght + 1)*sizeof(char));
+
+	l_iPercent = (int)(((float)p_iCurrentValue /(float)p_iMax)*(float)l_iScreenLenght);
+
+	/* If the bar is taller than the screen */
+	l_iPercent = (l_iPercent > l_iScreenLenght) ? l_iScreenLenght : l_iPercent;
+
+	/* If lenght == 0 then we need to add 1 in order to avoid infinite loop */
+	l_iPercent = (l_iPercent == 0) ? 1 : l_iPercent;
+
+	/* draw body */
+	for(l_iIterateur = 0; l_iIterateur < l_iPercent - 1; l_iIterateur++)
+	{
+      l_cLineBuffer[l_iIterateur] = l_cCaracterBody;
+	}
+	/* draw the head */
+   l_cLineBuffer[l_iIterateur++] = l_cCaracterHead;
+   l_cLineBuffer[l_iIterateur] = '\0';
+
+   printf("%s\r", l_cLineBuffer);
+   fflush(stdout);
+
+   free(l_cLineBuffer);
+}
 
 
 
@@ -67,9 +122,17 @@ int main(int argc, char** argv)
 
     srand(time(NULL));
 
-    LOG_INFO( "\n-------------------------------------\n"
-                "         Tornado %s starting\n"
-                "-------------------------------------", rev)
+    LOG_PRINT("\n"
+"      _/_/_/   _/_/    _/_/_/    _/     _/   _/_/_     _/_/_/    _/_/   \n"
+"       _/   _/   _/   _/    _/  _/_/   _/  _/    _/  _/    _/  _/   _/  \n"
+"      _/   _/    _/  _/    _/  _/ _/  _/  _/    _/  _/    _/  _/    _/  \n"
+"     _/   _/    _/  _/_/_/    _/  _/ _/  _/_/_/_/  _/    _/  _/    _/   \n"
+"    _/   _/    _/  _/ _/     _/   _/_/  _/    _/  _/    _/  _/    _/    \n"
+"   _/   _/    _/  _/   _/   _/    _//  _/    _/  _/    _/  _/    _/     \n"
+"  _/     _/_/    _/     _/ _/     _/  _/    _/  _/_/_/      _/_/        \n"
+"  \n"
+"                                 Rev %s\n", rev);
+
 
     l_iNumberOfAlreadyDownloaded =  checkConfigurationFiles(&l_cAlreadyDownloaded);
     networkLoop(&l_iNumberOfAlreadyDownloaded, &l_cAlreadyDownloaded);

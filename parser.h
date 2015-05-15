@@ -19,8 +19,7 @@
 	Header of the main file
 
 */
-
-int parserForNewEntries(struct MemoryStruct p_structMemory, char* p_cNewUrlForThisSession, unsigned int* p_iIndexOfNewEnd);
+int parserForNewEntries(struct MemoryStruct p_structMemory, char* p_cNewUrlForThisSession, unsigned int* p_iIndexOfNewEnd, unsigned int* p_iNumberOfToken);
 void extractAndEraseFirstToken(char* p_cNewUrlForThisSession, char* p_cFirstToken);
 void extractDataFromAPage(struct MemoryStruct p_structMemory, char** p_cDataOfAPage);
 

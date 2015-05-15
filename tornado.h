@@ -23,5 +23,7 @@
 
 void waitBetweenTwoTurn(void);
 void waitBetweenTwoURL(void);
+void getWindowsSize(unsigned int* p_iRow, unsigned int* p_iCol);
+void printProgressBar(unsigned int p_iMax, unsigned int p_iCurrentValue);
 
 #endif

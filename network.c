@@ -100,7 +100,7 @@ int retrieveAnUrl(const char* p_cUrlToGet, struct MemoryStruct* p_structMemory)
   * @param p_cAlreadyDownloaded : double string table storing all the already downloaded pages. One line per page, storing a string corresponding to the end of the URL
   * @param p_iNumberOfAlreadyDownloaded : number of already downloaded pages since the first start of the program
   */
-void downloadNewEntries(char* p_cNewUrlForThisSession, char*** p_cAlreadyDownloaded, int* p_iNumberOfAlreadyDownloaded)
+void downloadNewEntries(char* p_cNewUrlForThisSession, char*** p_cAlreadyDownloaded, int* p_iNumberOfAlreadyDownloaded, unsigned int p_iNumberOfToken)
 {
         struct MemoryStruct l_structMemory;
         char* l_cURL = (char*)malloc((URL_LENGTH + strlen(URL_PREFIX) + 1)*sizeof(char));
@@ -166,7 +166,10 @@ void downloadNewEntries(char* p_cNewUrlForThisSession, char*** p_cAlreadyDownloa
 
                                 /* Just wait a little bit in order to be forgotten by the website */
                                 waitBetweenTwoURL();
-        
+       
+                                /* The progressbar */
+                                printProgressBar(p_iNumberOfToken, (unsigned)l_iCurrentToken);
+
                                 /* Release memory needed by the save function, don't use realloc */
                                 if(l_cDataOfAPage != NULL)
                                 {
@@ -237,6 +240,7 @@ void networkLoop(int* p_iNumberOfAlreadyDownloaded, char*** p_cAlreadyDownloaded
         struct MemoryStruct l_structMemory;
         char* l_cNewUrlForThisSession = (char*)malloc(URL_LENGTH*NUMBER_OF_ENTRIES_PER_PAGE*sizeof(char)); 
         unsigned int l_iIndexOfNewEnd = 0;
+        unsigned int l_iNumberOfToken = 0;
         int l_iOldNumberOfAlreadyDownloaded = 0;
         char l_bStopStalking = FALSE;
 
@@ -257,11 +261,12 @@ void networkLoop(int* p_iNumberOfAlreadyDownloaded, char*** p_cAlreadyDownloaded
                         /* means that the page is stored in l_structMemory->memory */
                         LOG_INFO("retrieved %d", l_structMemory.size);
 
-                        parserForNewEntries(l_structMemory, l_cNewUrlForThisSession, &l_iIndexOfNewEnd);
+                        parserForNewEntries(l_structMemory, l_cNewUrlForThisSession, &l_iIndexOfNewEnd, &l_iNumberOfToken);
                         l_iOldNumberOfAlreadyDownloaded = *p_iNumberOfAlreadyDownloaded;
                         downloadNewEntries(l_cNewUrlForThisSession,
                                             p_cAlreadyDownloaded,
-                                            p_iNumberOfAlreadyDownloaded);
+                                            p_iNumberOfAlreadyDownloaded,
+                                            l_iNumberOfToken);
                         /* Currently useless... We supposed to manage the l_cNewUrlForThisSession buffer properly and
                          * eventually leave some entries in order to download them after, when the program have more time.
                          * But we don't. Anyway... Still here, and the idea too, maybee one day, a brave soul... */

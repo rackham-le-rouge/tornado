@@ -25,9 +25,10 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <curl/curl.h>
+#include <sys/ioctl.h>
 
 /* Some constants */
-#define	DEBUG_LEVEL	                    4
+#define DEBUG_LEVEL	                   1
 #define FILE_ALREADY_DONE               "alreadyDone.dat"
 #define URL_LENGTH                      9 /* At least add 1 to the real URL lenght for the \0 */
 #define URL_INDEX_OF_NEW                "http://pastebin.com/archive"
@@ -43,6 +44,9 @@
 #define WAIT_TIME_URL_MAX               2
 #define WAIT_TIME_URL_MIN               1
 #define MAX_URL_BEFORE_SAVING           2
+#define PROGRESS_BAR_BODY_CHARACTER     '-'
+#define PROGRESS_BAR_HEAD_CHARACTER     '>' 
+
 
 /* Logic stuff */
 enum boolean
@@ -66,20 +70,31 @@ struct MemoryStruct {
 
 #if(DEBUG_LEVEL > 0)
 #define LOG_ERROR(p_sStr, ...)      fprintf(stderr, "%s ERR [%d]:" p_sStr "\n", __FILE__, __LINE__, __VA_ARGS__);
+#else
+#define LOG_ERROR(p_sStr, ...)
 #endif
 
 #if(DEBUG_LEVEL > 1)
 #define LOG_WARNING(p_sStr, ...)      fprintf(stderr, "%s WARN [%d]:" p_sStr "\n", __FILE__, __LINE__, __VA_ARGS__);
+#else
+#define LOG_WARNING(p_sStr, ...)
 #endif
 
 #if(DEBUG_LEVEL > 2)
 #define LOG_INFO(p_sStr, ...)      fprintf(stderr, "%s INFO [%d]:" p_sStr "\n", __FILE__, __LINE__, __VA_ARGS__);
+#else
+#define LOG_INFO(p_sStr, ...)
 #endif
 
 
 #if(DEBUG_LEVEL > 3)
 #define LOG_MSG(p_sStr)      fprintf(stderr, "%s INFO [%d]:" p_sStr "\n", __FILE__, __LINE__);
+#else
+#define LOG_MSG(p_str)
 #endif
+
+#define LOG_PRINT(p_sStr, ...)      fprintf(stderr,  p_sStr "\n", __VA_ARGS__);
+
 
 #include "parser.h"
 #include "network.h"

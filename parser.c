@@ -21,7 +21,7 @@
  * @param p_iIndexOfNewEnd : index of the new end of the buffer
  * @return EXIT_SUCCESS or EXIT_FAILURE
  */
-int parserForNewEntries(struct MemoryStruct p_structMemory, char* p_cNewUrlForThisSession, unsigned int* p_iIndexOfNewEnd)
+int parserForNewEntries(struct MemoryStruct p_structMemory, char* p_cNewUrlForThisSession, unsigned int* p_iIndexOfNewEnd, unsigned int* p_iNumberOfToken)
 {
     enum boolean noMoreEntries = FALSE;
     char* l_cCurrentToken = NULL;
@@ -90,6 +90,7 @@ int parserForNewEntries(struct MemoryStruct p_structMemory, char* p_cNewUrlForTh
     free(l_cBufferForNewEntries);
     l_cBufferForNewEntries = NULL;
 
+    *p_iNumberOfToken = l_iCurrentToken;
     return EXIT_SUCCESS;
 }
 
