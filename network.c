@@ -168,7 +168,7 @@ void downloadNewEntries(char* p_cNewUrlForThisSession, char*** p_cAlreadyDownloa
                                 waitBetweenTwoURL();
        
                                 /* The progressbar */
-                                printProgressBar(p_iNumberOfToken, (unsigned)l_iCurrentToken);
+                                printProgressBar(p_iNumberOfToken, ((unsigned)l_iCurrentToken) + 1);
 
                                 /* Release memory needed by the save function, don't use realloc */
                                 if(l_cDataOfAPage != NULL)
