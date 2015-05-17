@@ -109,7 +109,8 @@ void downloadNewEntries(char* p_cNewUrlForThisSession, char*** p_cAlreadyDownloa
         char* l_cDataOfAPage = NULL; 
         char l_bNotAlreadyDownloaded;
         int l_iIterator;
-        int l_iCurrentToken = 0;
+        int l_iCurrentToken = 0;          /* count only the downloaded one during this turn */
+        int l_iRealCurrentToken = 0;      /* count the skipped ones */
 
         l_bNoMoreToken = FALSE;
         l_bNotAlreadyDownloaded = TRUE;
@@ -142,6 +143,8 @@ void downloadNewEntries(char* p_cNewUrlForThisSession, char*** p_cAlreadyDownloa
                     {
                         l_bNotAlreadyDownloaded = strcmp((*p_cAlreadyDownloaded)[l_iIterator], l_cCurrentToken) == 0 ? TRUE : l_bNotAlreadyDownloaded;
                     }
+
+                    l_iRealCurrentToken++;
                 }while(l_bNotAlreadyDownloaded == TRUE);
 
 
@@ -168,7 +171,7 @@ void downloadNewEntries(char* p_cNewUrlForThisSession, char*** p_cAlreadyDownloa
                                 waitBetweenTwoURL();
        
                                 /* The progressbar */
-                                printProgressBar(p_iNumberOfToken, ((unsigned)l_iCurrentToken) + 1);
+                                printProgressBar(p_iNumberOfToken, ((unsigned)l_iRealCurrentToken) + 1, l_cCurrentToken);
 
                                 /* Release memory needed by the save function, don't use realloc */
                                 if(l_cDataOfAPage != NULL)
@@ -238,6 +241,7 @@ void downloadNewEntries(char* p_cNewUrlForThisSession, char*** p_cAlreadyDownloa
 void networkLoop(int* p_iNumberOfAlreadyDownloaded, char*** p_cAlreadyDownloaded)
 {
         struct MemoryStruct l_structMemory;
+        char l_cLogMessage[URL_LENGTH];
         char* l_cNewUrlForThisSession = (char*)malloc(URL_LENGTH*NUMBER_OF_ENTRIES_PER_PAGE*sizeof(char)); 
         unsigned int l_iIndexOfNewEnd = 0;
         unsigned int l_iNumberOfToken = 0;
@@ -275,9 +279,13 @@ void networkLoop(int* p_iNumberOfAlreadyDownloaded, char*** p_cAlreadyDownloaded
                         /* Save downloaded pages in the record - We have to put a * because p_cAlreadyDownloaded is a pointer on the real l_cAlreadyDownloaded array of string
                          * thus we have to just send the array of string, not the pointer on the variable who store the pointer because we don't have to modify it */
                         LOG_MSG("Save the new visited pages...");
+                        strcpy(l_cLogMessage, " saving ");
+                        printProgressBar(l_iNumberOfToken, l_iNumberOfToken, l_cLogMessage);
                         saveAlreadyTakenPageFile(*p_cAlreadyDownloaded, l_iOldNumberOfAlreadyDownloaded, *p_iNumberOfAlreadyDownloaded);
 
                         /* FIXME - wait another records */
+                        strcpy(l_cLogMessage, "waiting");
+                        printProgressBar(l_iNumberOfToken, l_iNumberOfToken, l_cLogMessage);
                         waitBetweenTwoTurn();
 
                         if(l_structMemory.memory)

@@ -28,7 +28,7 @@
 #include <sys/ioctl.h>
 
 /* Some constants */
-#define DEBUG_LEVEL	                   1
+#define DEBUG_LEVEL	                   1 
 #define FILE_ALREADY_DONE               "alreadyDone.dat"
 #define URL_LENGTH                      9 /* At least add 1 to the real URL lenght for the \0 */
 #define URL_INDEX_OF_NEW                "http://pastebin.com/archive"
@@ -43,10 +43,10 @@
 #define WAIT_TIME_MIN                   5
 #define WAIT_TIME_URL_MAX               2
 #define WAIT_TIME_URL_MIN               1
-#define MAX_URL_BEFORE_SAVING           2
+#define MAX_URL_BEFORE_SAVING           9
 #define PROGRESS_BAR_BODY_CHARACTER     '-'
 #define PROGRESS_BAR_HEAD_CHARACTER     '>' 
-
+#define SCREEN_SIZE_COLUMN_MIN          20
 
 /* Logic stuff */
 enum boolean

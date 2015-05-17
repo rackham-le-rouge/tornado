@@ -68,7 +68,7 @@ void getWindowsSize(unsigned int* p_iRow, unsigned int* p_iCol)
   * @param p_iMax,p_iMax : max value to reach
   * @param p_iCurrentValue : current value between 0 and the max
   */
-void printProgressBar(unsigned int p_iMax, unsigned int p_iCurrentValue)
+void printProgressBar(unsigned int p_iMax, unsigned int p_iCurrentValue, char* p_cCurrentToken)
 {
    char* l_cLineBuffer;
 	unsigned int l_iIterateur = 0;
@@ -77,12 +77,28 @@ void printProgressBar(unsigned int p_iMax, unsigned int p_iCurrentValue)
 	char l_cCaracterBody = PROGRESS_BAR_BODY_CHARACTER;
 	char l_cCaracterHead = PROGRESS_BAR_HEAD_CHARACTER;
 	unsigned int l_iScreenLenght = -1;
+   unsigned int l_iProgressBarSize = 0;
+   unsigned int l_iOffset = 0;
 
    getWindowsSize(&l_iColumn, &l_iScreenLenght);
+   if(l_iScreenLenght < SCREEN_SIZE_COLUMN_MIN)
+   {
+      LOG_ERROR("Screen too small... Lenght : %d", l_iScreenLenght);
+      return;
+   }
 
    l_cLineBuffer = (char*)malloc((l_iScreenLenght + 1)*sizeof(char));
+   memset(l_cLineBuffer, ' ', l_iScreenLenght + 1);
 
-	l_iPercent = (int)(((float)p_iCurrentValue /(float)p_iMax)*(float)l_iScreenLenght);
+   /* in order to estimate the lenght */
+   snprintf(l_cLineBuffer, l_iScreenLenght, "[%d/%d]", p_iCurrentValue, p_iMax);
+
+   /*                                     -end and start of the bar      size and the two hooks       number and hooks */
+   l_iProgressBarSize = l_iScreenLenght   - 1 - 1 -                   strlen(p_cCurrentToken) - 2 -  strlen(l_cLineBuffer); 
+
+   /* create the line */
+   snprintf(l_cLineBuffer, l_iScreenLenght, "[%d/%d][%s][", p_iCurrentValue, p_iMax, p_cCurrentToken);
+	l_iPercent = (int)(((float)p_iCurrentValue /(float)p_iMax)*(float)l_iProgressBarSize);
 
 	/* If the bar is taller than the screen */
 	l_iPercent = (l_iPercent > l_iScreenLenght) ? l_iScreenLenght : l_iPercent;
@@ -90,13 +106,22 @@ void printProgressBar(unsigned int p_iMax, unsigned int p_iCurrentValue)
 	/* If lenght == 0 then we need to add 1 in order to avoid infinite loop */
 	l_iPercent = (l_iPercent == 0) ? 1 : l_iPercent;
 
+   l_iOffset = strlen(l_cLineBuffer);
 	/* draw body */
 	for(l_iIterateur = 0; l_iIterateur < l_iPercent - 1; l_iIterateur++)
 	{
-      l_cLineBuffer[l_iIterateur] = l_cCaracterBody;
+      l_cLineBuffer[l_iIterateur + l_iOffset] = l_cCaracterBody;
 	}
-	/* draw the head */
+   l_iIterateur += l_iOffset;
+
+ 	/* draw the head */
    l_cLineBuffer[l_iIterateur++] = l_cCaracterHead;
+    for( ; l_iIterateur < l_iScreenLenght - 1 ; l_iIterateur++)
+   {
+      l_cLineBuffer[l_iIterateur] = ' ';
+   }
+
+   l_cLineBuffer[l_iIterateur++] = ']';
    l_cLineBuffer[l_iIterateur] = '\0';
 
    printf("%s\r", l_cLineBuffer);
