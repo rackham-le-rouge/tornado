@@ -28,7 +28,7 @@
 #include <sys/ioctl.h>
 
 /* Some constants */
-#define DEBUG_LEVEL	                   1 
+#define DEBUG_LEVEL	                   1
 #define FILE_ALREADY_DONE               "alreadyDone.dat"
 #define URL_LENGTH                      9 /* At least add 1 to the real URL lenght for the \0 */
 #define URL_INDEX_OF_NEW                "http://pastebin.com/archive"
@@ -37,7 +37,7 @@
 #define TOKEN_DELIMITER_FOR_DATA_START  "onkeydown=\"return catchTab(this,event)\">"
 #define TOKEN_DELIMITER_FOR_DATA_END    "</textarea>"
 #define RAW_PAGES_DIRECTORY             "records"
-#define NUMBER_OF_ENTRIES_PER_PAGE      150
+#define NUMBER_OF_ENTRIES_PER_PAGE      151
 #define SEPARATION_CHARACTER            '#'     /* only one character allowed */
 #define WAIT_TIME_MAX                   15
 #define WAIT_TIME_MIN                   5
@@ -93,7 +93,7 @@ struct MemoryStruct {
 #define LOG_MSG(p_str)
 #endif
 
-#define LOG_PRINT(p_sStr, ...)      fprintf(stderr,  p_sStr "\n", __VA_ARGS__);
+#define LOG_PRINT(p_sStr, ...)      fprintf(stdout,  p_sStr "\n", __VA_ARGS__);
 
 
 #include "parser.h"

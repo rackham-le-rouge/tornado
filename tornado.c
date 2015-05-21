@@ -124,7 +124,7 @@ void printProgressBar(unsigned int p_iMax, unsigned int p_iCurrentValue, char* p
    l_cLineBuffer[l_iIterateur++] = ']';
    l_cLineBuffer[l_iIterateur] = '\0';
 
-   printf("%s\r", l_cLineBuffer);
+   fprintf(stdout, "%s\r", l_cLineBuffer);
    fflush(stdout);
 
    free(l_cLineBuffer);

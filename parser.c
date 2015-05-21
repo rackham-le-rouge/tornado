@@ -175,6 +175,11 @@ void extractDataFromAPage(struct MemoryStruct p_structMemory, char** p_cDataOfAP
     {
         LOG_WARNING("There is an error, instersting data are bigger than the page itself: %d", l_iSize);
     }
+    else if(l_iSize < 0)
+    {
+        LOG_ERROR("Incorrect page size (%d) ! Abort...", l_iSize);
+        *p_cDataOfAPage = NULL;
+    }
     else
     {
         /* Memory allocation */
