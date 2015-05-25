@@ -79,7 +79,7 @@ int retrieveAnUrl(const char* p_cUrlToGet, struct MemoryStruct* p_structMemory)
         /* check for errors, on the other cases, the page is stored in the memory */ 
         if(l_curlResponseCode != CURLE_OK)
         {
-                LOG_ERROR("Function curl_easy_perform() failed: %s", curl_easy_strerror(l_curlResponseCode));
+                LOG_WARNING("Function curl_easy_perform() failed: %s", curl_easy_strerror(l_curlResponseCode));
                 return EXIT_FAILURE;
         }
 
