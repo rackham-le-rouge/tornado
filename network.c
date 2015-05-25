@@ -176,7 +176,7 @@ void downloadNewEntries(char* p_cNewUrlForThisSession, char*** p_cAlreadyDownloa
                                 waitBetweenTwoURL();
        
                                 /* The progressbar */
-                                printProgressBar(p_iNumberOfToken, ((unsigned)l_iRealCurrentToken), l_cCurrentToken);
+                                printProgressBar(p_iNumberOfToken, ((unsigned)l_iRealCurrentToken), l_cCurrentToken, *p_iNumberOfAlreadyDownloaded);
 
                                 /* Release memory needed by the save function, don't use realloc */
                                 if(l_cDataOfAPage != NULL)
@@ -285,12 +285,12 @@ void networkLoop(int* p_iNumberOfAlreadyDownloaded, char*** p_cAlreadyDownloaded
                          * thus we have to just send the array of string, not the pointer on the variable who store the pointer because we don't have to modify it */
                         LOG_MSG("Save the new visited pages...");
                         strcpy(l_cLogMessage, " saving ");
-                        printProgressBar(l_iNumberOfToken, l_iNumberOfToken, l_cLogMessage);
+                        printProgressBar(l_iNumberOfToken, l_iNumberOfToken, l_cLogMessage, *p_iNumberOfAlreadyDownloaded);
                         saveAlreadyTakenPageFile(*p_cAlreadyDownloaded, l_iOldNumberOfAlreadyDownloaded, *p_iNumberOfAlreadyDownloaded);
 
                         /* FIXME - wait another records */
                         strcpy(l_cLogMessage, "waiting");
-                        printProgressBar(l_iNumberOfToken, l_iNumberOfToken, l_cLogMessage);
+                        printProgressBar(l_iNumberOfToken, l_iNumberOfToken, l_cLogMessage, *p_iNumberOfAlreadyDownloaded);
                         waitBetweenTwoTurn();
 
                         if(l_structMemory.memory)

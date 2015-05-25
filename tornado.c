@@ -68,7 +68,7 @@ void getWindowsSize(unsigned int* p_iRow, unsigned int* p_iCol)
   * @param p_iMax,p_iMax : max value to reach
   * @param p_iCurrentValue : current value between 0 and the max
   */
-void printProgressBar(unsigned int p_iMax, unsigned int p_iCurrentValue, char* p_cCurrentToken)
+void printProgressBar(unsigned int p_iMax, unsigned int p_iCurrentValue, char* p_cCurrentToken, unsigned int p_iAllRecords)
 {
    char* l_cLineBuffer;
 	unsigned int l_iIterateur = 0;
@@ -91,13 +91,13 @@ void printProgressBar(unsigned int p_iMax, unsigned int p_iCurrentValue, char* p
    memset(l_cLineBuffer, ' ', l_iScreenLenght + 1);
 
    /* in order to estimate the lenght */
-   snprintf(l_cLineBuffer, l_iScreenLenght, "[%d/%d]", p_iCurrentValue, p_iMax);
+   snprintf(l_cLineBuffer, l_iScreenLenght, "[%d/%d][%u]", p_iCurrentValue, p_iMax, p_iAllRecords);
 
    /*                                     -end and start of the bar      size and the two hooks       number and hooks */
    l_iProgressBarSize = l_iScreenLenght   - 1 - 1 -                   strlen(p_cCurrentToken) - 2 -  strlen(l_cLineBuffer); 
 
    /* create the line */
-   snprintf(l_cLineBuffer, l_iScreenLenght, "[%d/%d][%s][", p_iCurrentValue, p_iMax, p_cCurrentToken);
+   snprintf(l_cLineBuffer, l_iScreenLenght, "[%d/%d][%u][%s][", p_iCurrentValue, p_iMax, p_iAllRecords, p_cCurrentToken);
 	l_iPercent = (int)(((float)p_iCurrentValue /(float)p_iMax)*(float)l_iProgressBarSize);
 
 	/* If the bar is taller than the screen */
