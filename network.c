@@ -301,7 +301,7 @@ void networkLoop(int* p_iNumberOfAlreadyDownloaded, char*** p_cAlreadyDownloaded
                 }
                else
                 {
-                    LOG_ERROR("There is an error with the network, we cant load the page... Abort.%s"," ");
+                    fprintf(stderr, "There is an error with the network, we cant load the page... Abort. Waiting for connection.\r");
                 }
         }
 

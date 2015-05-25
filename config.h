@@ -28,7 +28,7 @@
 #include <sys/ioctl.h>
 
 /* Some constants */
-#define DEBUG_LEVEL	                   1
+#define DEBUG_LEVEL	                   0
 #define FILE_ALREADY_DONE               "alreadyDone.dat"
 #define URL_LENGTH                      9 /* At least add 1 to the real URL lenght for the \0 */
 #define URL_INDEX_OF_NEW                "http://pastebin.com/archive"
