@@ -163,27 +163,24 @@ void downloadNewEntries(char* p_cNewUrlForThisSession, char*** p_cAlreadyDownloa
 
                                 /* Implement here the function to extract usefull content and save the page on the hard drive */
                                 extractDataFromAPage(l_structMemory, &l_cDataOfAPage);
-                                if(l_cDataOfAPage == NULL)
-                                {
-                                    /* There is an error, page size is negative - Need to abort - dirty goto, but used for error bandling */
-                                    goto jumpAfterSizeFail;
-                                }
-
-                                /* Save the just downloaded page */
-                                saveDownloadedPage(l_cCurrentToken, l_cDataOfAPage);
-
-                                /* Just wait a little bit in order to be forgotten by the website */
-                                waitBetweenTwoURL();
-       
-                                /* The progressbar */
-                                printProgressBar(p_iNumberOfToken, ((unsigned)l_iRealCurrentToken), l_cCurrentToken, *p_iNumberOfAlreadyDownloaded);
-
-                                /* Release memory needed by the save function, don't use realloc */
                                 if(l_cDataOfAPage != NULL)
                                 {
-                                    free(l_cDataOfAPage);
+                                    /* Save the just downloaded page */
+                                    saveDownloadedPage(l_cCurrentToken, l_cDataOfAPage);
+
+                                    /* Just wait a little bit in order to be forgotten by the website */
+                                    waitBetweenTwoURL();
+       
+                                    /* The progressbar */
+                                    printProgressBar(p_iNumberOfToken, ((unsigned)l_iRealCurrentToken), l_cCurrentToken, *p_iNumberOfAlreadyDownloaded);
+
+                                    /* Release memory needed by the save function, don't use realloc */
+                                    if(l_cDataOfAPage != NULL)
+                                    {
+                                        free(l_cDataOfAPage);
+                                    }
                                 }
-jumpAfterSizeFail:
+
                                 /* Add a record to the p_cAlreadyDownloaded at the last moment, don't forget to update p_iNumberOfAlreadyDownloaded */
                                 *p_cAlreadyDownloaded = realloc(*p_cAlreadyDownloaded, (*p_iNumberOfAlreadyDownloaded + 1)*sizeof(char*));
                                 if(*p_cAlreadyDownloaded != NULL)
