@@ -111,6 +111,7 @@ void downloadNewEntries(char* p_cNewUrlForThisSession, char*** p_cAlreadyDownloa
         int l_iIterator;
         int l_iCurrentToken = 0;          /* count only the downloaded one during this turn */
         int l_iRealCurrentToken = 0;      /* count the skipped ones */
+        static int l_iMaxURLToDownloadPerTurn = MAX_URL_BEFORE_SAVING_INIT;
 
         l_bNoMoreToken = FALSE;
         l_bNotAlreadyDownloaded = TRUE;
@@ -217,10 +218,27 @@ void downloadNewEntries(char* p_cNewUrlForThisSession, char*** p_cAlreadyDownloa
                 /* Count the number of URL retrieved for this session */
                 l_iCurrentToken++;
 
-                if(l_iCurrentToken >= MAX_URL_BEFORE_SAVING)
+                if(l_iCurrentToken >= l_iMaxURLToDownloadPerTurn)
                 {
                     l_bNoMoreToken = TRUE;
                 }
+        }
+        /* Means l_iMaxURLToDownloadPerTurn is greater than needed to get all data */
+        if(p_iNumberOfToken - l_iRealCurrentToken < 0)
+        {
+              l_iMaxURLToDownloadPerTurn--;
+        }
+
+        /* Recompute the max of URL to download per turn */
+        l_iMaxURLToDownloadPerTurn += (int)
+               ((float)p_iNumberOfToken - ( float)l_iRealCurrentToken)
+               /
+               ((float)MAX_URL_NUMBER_OF_TURN_TO_FIX);
+
+        /* Check if we reach the max absolute value */
+        if(l_iMaxURLToDownloadPerTurn > MAX_URL_MAXIMUM_PER_TURN)
+        {
+             l_iMaxURLToDownloadPerTurn = MAX_URL_MAXIMUM_PER_TURN;
         }
 
         /* Release the Kra... memory */
