@@ -168,12 +168,12 @@ void downloadNewEntries(char* p_cNewUrlForThisSession, char*** p_cAlreadyDownloa
                                 {
                                     /* Save the just downloaded page */
                                     saveDownloadedPage(l_cCurrentToken, l_cDataOfAPage);
-
-                                    /* Just wait a little bit in order to be forgotten by the website */
-                                    waitBetweenTwoURL();
        
                                     /* The progressbar */
                                     printProgressBar(p_iNumberOfToken, ((unsigned)l_iRealCurrentToken), l_cCurrentToken, *p_iNumberOfAlreadyDownloaded);
+
+                                    /* Just wait a little bit in order to be forgotten by the website */
+                                    waitBetweenTwoURL();
 
                                     /* Release memory needed by the save function, don't use realloc */
                                     if(l_cDataOfAPage != NULL)
@@ -194,8 +194,11 @@ void downloadNewEntries(char* p_cNewUrlForThisSession, char*** p_cAlreadyDownloa
                                         }
 
                                         /* memory is reserved, thus, we can update the size, even if the copy failed... */
+                                        strcpy((*p_cAlreadyDownloaded)[*p_iNumberOfAlreadyDownloaded], l_cCurrentToken);
                                         (*p_iNumberOfAlreadyDownloaded)++;
-                                        strcpy((*p_cAlreadyDownloaded)[*p_iNumberOfAlreadyDownloaded - 1], l_cCurrentToken);
+
+                                        /* Count the number of URL retrieved for this session */
+                                        l_iCurrentToken++;
                                 }
                                 else
                                 {
@@ -215,21 +218,23 @@ void downloadNewEntries(char* p_cNewUrlForThisSession, char*** p_cAlreadyDownloa
                                 LOG_ERROR("Network error on URL %s", l_cCurrentToken);
                         }
                 }
-                /* Count the number of URL retrieved for this session */
-                l_iCurrentToken++;
 
                 if(l_iCurrentToken >= l_iMaxURLToDownloadPerTurn)
                 {
                     l_bNoMoreToken = TRUE;
                 }
         }
-        /* Means l_iMaxURLToDownloadPerTurn is greater than needed to get all data */
-        if(p_iNumberOfToken - l_iRealCurrentToken < 0)
+        /* Means l_iMaxURLToDownloadPerTurn is less than needed to get all data. Need to increment it */
+        /* if l_iMaxURLToDownloadPerTurn is less than needed, recompute the max of URL to download per turn
+         * If we have 100% of MAX_URL_NUMBER_OF_TURN_TO_FIX already downloaded, we sub one */
+        if(p_iNumberOfToken - l_iRealCurrentToken == 0)
         {
-              l_iMaxURLToDownloadPerTurn--;
+            l_iMaxURLToDownloadPerTurn -= (int)
+                   ((float)l_iMaxURLToDownloadPerTurn - ( float)l_iCurrentToken)
+                   /
+                   ((float)MAX_URL_NUMBER_OF_TURN_TO_FIX);
         }
-
-        /* Recompute the max of URL to download per turn */
+        /* Recompute the max of URL to download per turn - If we have 100% of MAX_URL_NUMBER_OF_TURN_TO_FIX, we add one */
         l_iMaxURLToDownloadPerTurn += (int)
                ((float)p_iNumberOfToken - ( float)l_iRealCurrentToken)
                /
@@ -239,6 +244,10 @@ void downloadNewEntries(char* p_cNewUrlForThisSession, char*** p_cAlreadyDownloa
         if(l_iMaxURLToDownloadPerTurn > MAX_URL_MAXIMUM_PER_TURN)
         {
              l_iMaxURLToDownloadPerTurn = MAX_URL_MAXIMUM_PER_TURN;
+        }
+        if(l_iMaxURLToDownloadPerTurn < 1)
+        {
+             l_iMaxURLToDownloadPerTurn = 1;
         }
 
         /* Release the Kra... memory */
