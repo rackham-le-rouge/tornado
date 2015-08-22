@@ -216,6 +216,10 @@ unsigned int checkConfigurationFiles(char*** p_cAlreadyDownloaded)
 {
     char l_cDirectory[] = RAW_PAGES_DIRECTORY; 
 
+    /* Doesn't care about the ret code, because EEXIST seems to be K.O, this 
+     * function always send back -1 instead of a smarter code */
+    createDirectory(l_cDirectory);
+
 
     if(checkIfAFileExist(FILE_ALREADY_DONE) == EXIT_FAILURE)
     {
@@ -223,10 +227,6 @@ unsigned int checkConfigurationFiles(char*** p_cAlreadyDownloaded)
         LOG_INFO("%s is not currently here. Means you are starting for the first time ?", FILE_ALREADY_DONE);
         return 0;
     }
-
-    /* Doesn't care about the ret code, because EEXIST seems to be K.O, this 
-     * function always send back -1 instead of a smarter code */
-    createDirectory(l_cDirectory);
 
     return loadAlreadyTakenPageFile(p_cAlreadyDownloaded);    
 }
